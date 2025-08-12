@@ -1,0 +1,48 @@
+############################
+# === Java / Maven / Gradle ===
+############################
+target/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+
+############################
+# === Node.js / Frontend ===
+############################
+node_modules/
+dist/
+out/
+.cache/
+.next/
+.nuxt/
+coverage/
+
+# Vue / React / Angular
+*.log
+*.tmp
+*.temp
+*.tsbuildinfo
+
+############################
+# === Environment Files ===
+############################
+.env
+.env.*.local
+
+############################
+# === IDE / Editors ===
+############################
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# VS Code
+.vscode/
+
+

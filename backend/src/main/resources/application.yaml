@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: jdbc:mysql://localhost:3306
+    username: root
+    password: tg852963
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#debug: true
+
