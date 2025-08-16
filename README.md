@@ -152,3 +152,81 @@
 
 ```
 
+
+
+
+
+# 文章接口开发
+
+## 文章相关数据表设计
+
+### **1.文章表 `article`**
+
+存放文章的主体信息
+
+```sql
+CREATE TABLE article (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    summary TEXT,
+    cover_url VARCHAR(500),
+    content LONGTEXT NOT NULL,
+    publish_time DATETIME NOT NULL,
+    update_time DATETIME NOT NULL,
+    views BIGINT DEFAULT 0,
+    likes BIGINT DEFAULT 0,
+    comments BIGINT DEFAULT 0
+);
+```
+
+**说明：**
+
+- `content` 可以直接存长文本，也可以考虑存到 `article_content` 表分离（如果文章内容很大且访问频率低）。
+- `views/likes/comments` 这种统计字段可能会被缓存处理，不一定实时更新数据库。
+
+### **2.标签表`tag`**
+
+因为一个文章可能有多个标签，所以是多对多关系。
+
+**标签表 `tag`**
+
+```
+CREATE TABLE tag (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+```
+
+**文章-标签关系表 `article_tag`**
+
+```
+CREATE TABLE article_tag (
+    article_id BIGINT NOT NULL,
+    tag_id BIGINT NOT NULL,
+    PRIMARY KEY(article_id, tag_id),
+    FOREIGN KEY (article_id) REFERENCES article(id),
+    FOREIGN KEY (tag_id) REFERENCES tag(id)
+);
+```
+
+### **3. 评论表 `comment`**
+
+存储评论，支持多级评论（可通过 `parent_id` 实现）
+
+```
+CREATE TABLE comment (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    article_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    content TEXT NOT NULL,
+    create_time DATETIME NOT NULL,
+    parent_id BIGINT DEFAULT NULL,
+    FOREIGN KEY (article_id) REFERENCES article(id)
+);
+```
+
+- 如果文章访问量很大，可以把 `views/likes/comments` 这些字段放缓存里（Redis）做异步更新，避免写热点。
+- 文章 `content` 很大且访问频率低时，可以拆到单独表 `article_content`。
+
+## 文章内容渲染如何保证结构不丢失
+

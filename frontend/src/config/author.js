@@ -1,0 +1,7 @@
+export const avatarUrl = '/avatar.jpg'
+export const authorName = 'tgapk'
+export const motto = '做自己的英雄'
+export const githubUrl = 'https://github.com/tg-tian/Blog'
+export const githubIcon = '/github.svg'
+export const email = '914837973@qq.com'
+export const emailIcon = '/email.svg'

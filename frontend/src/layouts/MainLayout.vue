@@ -1,19 +1,22 @@
 <template>
-    <div class="flex flex-col min-h-screen bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-500 text-white">
-        <!-- 导航栏 -->
-        <NavBar />
-
-        <!-- 中间内容 -->
-        <main class="flex-1 container mx-auto px-4 py-8 rounded-lg shadow-lg bg-white/10 backdrop-blur-md">
-            <router-view />
-        </main>
-
-        <!-- 页脚 -->
-        <Footer />
+    <div class="flex flex-col min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 antialiased">
+        <NavBar class="fixed top-0 left-0 w-full z-50 h-12" />
+        <div class="flex flex-1 flex-row">
+            <aside class="fixed top-12 left-0 w-1/5 h-[calc(100vh-4rem)] ">
+                <SideBar />
+            </aside>
+            <main class="flex-1 ml-[20%] mt-12">
+                <router-view />
+            </main>
+        </div>
+        <Footer class="text-gray-400 text-center py-6" />
     </div>
 </template>
+
+
 
 <script setup>
 import NavBar from './NavBar.vue'
 import Footer from '@/layouts/Footer.vue'
+import SideBar from './SideBar.vue';
 </script>
