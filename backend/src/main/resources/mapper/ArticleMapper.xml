@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tg.blog.backend.dao.ArticleMapper">
+    <insert id="insertArticle" parameterType="com.tg.blog.backend.entity.Article" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO article(title, summary, content, cover_url, views,
+                            likes, comments, publish_time, update_time)
+        VALUES (#{title}, #{summary} ,#{content}, #{coverUrl},
+                #{views}, #{likes}, #{comments},
+                #{publishTime}, #{updateTime})
+    </insert>
+
+    <select id="selectArticleById" parameterType="long"
+            resultType="com.tg.blog.backend.entity.Article">
+        SELECT id, title, summary, content, cover_url AS coverUrl,
+               views, likes, comments, publish_time AS publishTime,
+               update_time AS updateTime
+        FROM article
+        WHERE id = #{id}
+    </select>
+    <select id="selectAllArticles" resultType="com.tg.blog.backend.entity.Article">
+        select id, title, summary, content, cover_url AS coverUrl,
+               views, likes, comments, publish_time AS publishTime,
+               update_time AS updateTime
+        FROM article
+    </select>
+
+    <update id="updateArticle" parameterType="com.tg.blog.backend.entity.Article">
+        UPDATE article
+        SET title = #{title},
+            summary = #{summary},
+            content = #{content},
+            cover_url = #{coverUrl},
+            views = #{views},
+            likes = #{likes},
+            comments = #{comments},
+            publish_time = #{publishTime},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteArticle" parameterType="long">
+        DELETE FROM article WHERE id = #{id}
+    </delete>
+</mapper>
