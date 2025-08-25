@@ -1,8 +1,222 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer components {
-  .hover {
-    @apply transform transition-all duration-300 hover:scale-[1.03] hover:shadow-xl;
+  /* 通用组件样式 - 基于 Tailwind CSS */
+
+  /* ========== 卡片组件样式 ========== */
+  /* 基础卡片 */
+  .card-base {
+    @apply bg-white rounded-xl shadow-md border border-gray-100;
+  }
+
+  /* 卡片悬浮效果 */
+  .card-hover {
+    @apply hover:shadow-lg hover:scale-[1.02] transition-all duration-300;
+  }
+
+  /* 内容卡片 */
+  .card-content {
+    @apply p-4 md:p-5;
+  }
+
+  /* 统计卡片 */
+  .card-stats {
+    @apply bg-gray-50 hover:bg-gray-100 p-2 rounded-lg border border-gray-200 transition-colors;
+  }
+
+  /* ========== 按钮样式 ========== */
+  /* 主要按钮 */
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors;
+  }
+
+  /* 危险按钮 */
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors;
+  }
+
+  /* 次要按钮 */
+  .btn-secondary {
+    @apply px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors;
+  }
+
+  /* 文本按钮 */
+  .btn-text {
+    @apply text-indigo-600 hover:text-indigo-900 text-sm font-medium transition-colors;
+  }
+
+  /* 文本按钮 - 危险 */
+  .btn-text-danger {
+    @apply text-red-600 hover:text-red-900 text-sm font-medium transition-colors;
+  }
+
+  /* 分页按钮 */
+  .btn-pagination {
+    @apply px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 transition-colors;
+  }
+
+  /* 关闭按钮 */
+  .btn-close {
+    @apply text-gray-400 hover:text-gray-600 transition-colors;
+  }
+
+  /* ========== 表单元素 ========== */
+  /* 输入框 */
+  .input-base {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500;
+  }
+
+  /* 标签 */
+  .label-base {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+
+  /* 文本域 */
+  .textarea-base {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500;
+  }
+
+  /* ========== 表格样式 ========== */
+  /* 表格 */
+  .table-base {
+    @apply min-w-full divide-y divide-gray-300;
+  }
+
+  /* 表格头部 */
+  .table-header {
+    @apply bg-gray-50;
+  }
+
+  /* 表格头部单元格 */
+  .table-header-cell {
+    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+  }
+
+  /* 表格主体 */
+  .table-body {
+    @apply bg-white divide-y divide-gray-200;
+  }
+
+  /* 表格单元格 */
+  .table-cell {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-500;
+  }
+
+  /* ========== 布局和间距 ========== */
+  /* 内容间距 */
+  .content-spacing {
+    @apply space-y-4;
+  }
+
+  /* 网格布局 - 响应式 */
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  /* 网格布局 - 2列 */
+  .grid-2-cols {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+  }
+
+  /* ========== 文本样式 ========== */
+  /* 标题 */
+  .heading-lg {
+    @apply text-xl font-semibold text-gray-800;
+  }
+
+  /* 中等标题 */
+  .heading-md {
+    @apply text-lg font-bold text-gray-800;
+  }
+
+  /* 描述文本 */
+  .text-description {
+    @apply text-gray-600 text-sm leading-relaxed;
+  }
+
+  /* 小标题文本 */
+  .text-caption {
+    @apply text-xs text-gray-500;
+  }
+
+  /* 链接文本 */
+  .text-link {
+    @apply text-indigo-600 hover:underline;
+  }
+
+  /* ========== 图片样式 ========== */
+  /* 头像 - 大 */
+  .avatar-lg {
+    @apply w-16 h-16 object-cover rounded-full border-2 border-white shadow-md;
+  }
+
+  /* 封面图片 */
+  .cover-image {
+    @apply w-full max-h-48 object-cover rounded-lg;
+  }
+
+  /* 项目图片 */
+  .project-image {
+    @apply w-full h-40 object-cover rounded-lg;
+  }
+
+  /* ========== 状态样式 ========== */
+  /* 在线状态指示器 */
+  .status-online {
+    @apply absolute bottom-0.5 right-0.5 w-3 h-3 bg-green-500 rounded-full border border-white;
+  }
+
+  /* ========== 模态框样式 ========== */
+  /* 模态框背景 */
+  .modal-backdrop {
+    @apply fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50;
+  }
+
+  /* 模态框容器 */
+  .modal-container {
+    @apply relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white;
+  }
+
+  /* 模态框头部 */
+  .modal-header {
+    @apply flex justify-between items-center mb-4;
+  }
+
+  /* ========== Markdown 样式 ========== */
+  /* 代码块样式 */
+  .markdown-content pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4;
+  }
+
+  .markdown-content pre code {
+    @apply bg-transparent text-inherit font-mono text-sm leading-relaxed;
+  }
+
+  /* 行内代码样式 */
+  .markdown-content code {
+    @apply bg-gray-100 text-gray-800 px-2 py-1 rounded font-mono text-sm;
+  }
+
+  /* 确保pre中的code不应用行内样式 */
+  .markdown-content pre code {
+    @apply bg-transparent px-0 py-0;
+  }
+
+  /* ========== 修复md-editor-v3组件z-index问题 ========== */
+  /* 确保导航栏能覆盖md-editor的所有元素 */
+  .md-editor-preview,
+  .md-editor-preview *,
+  .md-editor-preview-wrapper,
+  .md-editor-preview-wrapper *,
+  .md-editor,
+  .md-editor *,
+  .md-editor-code,
+  .md-editor-code *,
+  details,
+  details * {
+    position: relative !important;
+    z-index: auto !important;
   }
 }

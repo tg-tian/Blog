@@ -1,15 +1,16 @@
 <template>
     <div class="flex flex-col min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 antialiased">
-        <NavBar class="fixed top-0 left-0 w-full z-50 h-12" />
+        <NavBar class="fixed top-0 left-0 w-full z-[9999] h-12" />
         <div class="flex flex-1 flex-row">
             <aside class="fixed top-12 left-0 w-1/5 h-[calc(100vh-4rem)] ">
                 <SideBar />
             </aside>
-            <main class="flex-1 ml-[20%] mt-12">
+            <main class="flex-1 ml-[20%] mt-12 mr-10">
                 <router-view />
+                <Footer class="text-gray-400 text-center py-6" />
             </main>
         </div>
-        <Footer class="text-gray-400 text-center py-6" />
+
     </div>
 </template>
 

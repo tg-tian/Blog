@@ -1,5 +1,6 @@
 package com.tg.blog.backend.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.tg.blog.backend.dto.ArticleDTO;
 import com.tg.blog.backend.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +29,17 @@ public class ArticleController {
         return ResponseEntity.success(article);
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<List<ArticleDTO>> getAllArticles() {
         List<ArticleDTO> articles = articleService.getAllArticles();
         return ResponseEntity.success(articles);
     }
 
+    @GetMapping
+    public ResponseEntity<PageInfo<ArticleDTO>> getArticlesByPage(@RequestParam int page, @RequestParam int size) {
+        PageInfo<ArticleDTO> articles = articleService.getArticlesByPage(page, size);
+        return ResponseEntity.success(articles);
+    }
     @PutMapping("/{id}")
     public ResponseEntity<ArticleDTO> updateArticle(@PathVariable Long id, @RequestBody ArticleDTO articleDTO) {
         ArticleDTO article = articleService.updateArticle(id, articleDTO);

@@ -16,15 +16,16 @@
             resultType="com.tg.blog.backend.entity.Article">
         SELECT id, title, summary, content, cover_url AS coverUrl,
                views, likes, comments, publish_time AS publishTime,
-               update_time AS updateTime
+               update_time AS updateTime, deleted
         FROM article
-        WHERE id = #{id}
+        WHERE id = #{id} AND deleted = 0
     </select>
     <select id="selectAllArticles" resultType="com.tg.blog.backend.entity.Article">
         select id, title, summary, content, cover_url AS coverUrl,
                views, likes, comments, publish_time AS publishTime,
-               update_time AS updateTime
+               update_time AS updateTime, deleted
         FROM article
+        WHERE deleted = 0
     </select>
 
     <update id="updateArticle" parameterType="com.tg.blog.backend.entity.Article">
@@ -38,10 +39,10 @@
             comments = #{comments},
             publish_time = #{publishTime},
             update_time = #{updateTime}
-        WHERE id = #{id}
+        WHERE id = #{id} AND deleted = 0
     </update>
 
-    <delete id="deleteArticle" parameterType="long">
-        DELETE FROM article WHERE id = #{id}
-    </delete>
+    <update id="deleteArticle" parameterType="long">
+        UPDATE article SET deleted = 1 WHERE id = #{id}
+    </update>
 </mapper>

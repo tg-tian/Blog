@@ -27,4 +27,5 @@ public class Article {
     
     private Long comments;
 
+    private Integer deleted;
 }

@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ArticleException.class)
-    public ResponseEntity<?> handleArticleCreationException(ArticleException ex) {
-        return ResponseEntity.failure(500, ex.getMessage());
+    public ResponseEntity<?> handleArticleException(ArticleException ex) {
+        return ResponseEntity.failure(501, ex.getMessage());
     }
 
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
-        return ResponseEntity.failure(500, "Server error: " + ex.getMessage());
+        return ResponseEntity.failure(500, "Server error: ");
     }
 
     @ExceptionHandler(Exception.class)

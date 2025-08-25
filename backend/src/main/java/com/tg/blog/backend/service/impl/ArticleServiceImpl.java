@@ -1,5 +1,7 @@
 package com.tg.blog.backend.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.tg.blog.backend.common.exception.ArticleException;
 import com.tg.blog.backend.dao.ArticleMapper;
 import com.tg.blog.backend.dto.ArticleDTO;
@@ -51,6 +53,14 @@ public class ArticleServiceImpl implements ArticleService {
             throw new ArticleException("No articles found");
         }
         return articleConverter.toDTOList(articles);
+    }
+
+    @Override
+    public PageInfo<ArticleDTO> getArticlesByPage(int page, int size) {
+        PageHelper.startPage(page, size);
+        List<Article> articles = articleMapper.selectAllArticles();
+        List<ArticleDTO> articleDTOs = articleConverter.toDTOList(articles);
+        return new PageInfo<>(articleDTOs);
     }
 
     @Override

@@ -9,7 +9,7 @@ export default {
         'nav-gradient-end': '#fdbb2d'
       },
       fontFamily: {
-        cute: ['Quicksand', 'sans-serif']
+        // 使用系统默认字体
       }
     }
   },

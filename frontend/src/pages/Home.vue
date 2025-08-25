@@ -1,25 +1,39 @@
 <template>
-    <div class="m-4 space-y-4">
+    <div v-if="loading" class="text-center py-8">
+        <div class="text-gray-500">加载中...</div>
+    </div>
+    <div v-else class="m-4 space-y-4">
         <ArticleList :articles="articles" />
         <ProjectList />
     </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import ArticleList from '@/components/ArticleList.vue'
-import ProjectList from '@/components/ProjectList.vue';
+import ProjectList from '@/components/ProjectList.vue'
+import { getArticles } from '@/api/article'
 
-// 模拟数据，实际应通过 API 获取
-const articles = [
-    { id: 1, title: 'Vue3 项目搭建', summary: '手把手教你搭建 Vue3 + Pinia 项目' },
-    { id: 2, title: 'Axios 封装技巧', summary: '如何优雅地封装 API 请求' },
-    { id: 1, title: 'Vue3 项目搭建', summary: '手把手教你搭建 Vue3 + Pinia 项目' },
-    { id: 2, title: 'Axios 封装技巧', summary: '如何优雅地封装 API 请求' },
-    { id: 1, title: 'Vue3 项目搭建', summary: '手把手教你搭建 Vue3 + Pinia 项目' },
-    { id: 2, title: 'Axios 封装技巧', summary: '如何优雅地封装 API 请求' },
-    { id: 1, title: 'Vue3 项目搭建', summary: '手把手教你搭建 Vue3 + Pinia 项目' },
-    { id: 2, title: 'Axios 封装技巧', summary: '如何优雅地封装 API 请求' },
-    { id: 1, title: 'Vue3 项目搭建', summary: '手把手教你搭建 Vue3 + Pinia 项目' },
-    { id: 2, title: 'Axios 封装技巧', summary: '如何优雅地封装 API 请求' },
-]
+const loading = ref(true)
+const articles = ref([])
+const page = ref(1)
+const size = ref(10)
+
+// 加载文章列表
+const loadArticles = async () => {
+    try {
+        loading.value = true
+        const response = await getArticles(page.value,size.value)
+        articles.value = response.data.list || []
+    } catch (error) {
+        console.error('加载文章列表失败:', error)
+        articles.value = []
+    } finally {
+        loading.value = false
+    }
+}
+
+onMounted(() => {
+    loadArticles()
+})
 </script>

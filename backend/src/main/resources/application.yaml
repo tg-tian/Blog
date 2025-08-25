@@ -11,3 +11,8 @@ spring:
 mybatis:
   mapper-locations: classpath:mapper/*.xml
 
+minio:
+    endpoint: http://localhost:9002
+    access-key: tgapk
+    secret-key: tg852963
+    bucket: blog
