@@ -20,3 +20,11 @@ export const updateArticle = (id, data) =>
 export const deleteArticle = (id) =>
     request.delete(`/article/${id}`)
 
+// 获取分类列表
+export const getCategories = () =>
+    request.get('/article/categories')
+
+// 获取标签列表
+export const getTags = () =>
+    request.get('/article/tags')
+

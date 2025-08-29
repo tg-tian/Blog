@@ -44,6 +44,95 @@
             </div>
           </div>
 
+          <div class="grid-2-cols">
+            <!-- 分类选择 -->
+            <div>
+              <label class="label-base">
+                分类
+              </label>
+              <div class="relative">
+                <button
+                  type="button"
+                  @click="toggleCategoryDropdown"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <span v-if="!form.category" class="text-gray-500">请选择分类</span>
+                  <span v-else class="text-gray-900">{{ form.category }}</span>
+                  <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+                
+                <!-- 下拉框 -->
+                 <div v-if="showCategoryDropdown" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                   <div 
+                     v-for="category in categories" 
+                     :key="category.id" 
+                     class="px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm"
+                     :class="{ 'bg-indigo-50 text-indigo-700': form.category === category.name }"
+                     @click="selectCategory(category.name)"
+                   >
+                     {{ category.name }}
+                   </div>
+                 </div>
+              </div>
+            </div>
+
+            <!-- 标签选择 -->
+             <div>
+               <label class="label-base">
+                 标签
+               </label>
+               <div class="relative">
+                 <button
+                   type="button"
+                   @click="toggleTagDropdown"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                 >
+                   <span v-if="selectedTags.length === 0" class="text-gray-500">请选择标签</span>
+                   <span v-else class="text-gray-900">已选择 {{ selectedTags.length }} 个标签</span>
+                   <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                   </svg>
+                 </button>
+                 
+                 <!-- 下拉框 -->
+                  <div v-if="showTagDropdown" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                    <div 
+                      v-for="tag in tags" 
+                      :key="tag.id" 
+                      class="px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm"
+                      :class="{ 'bg-indigo-50 text-indigo-700': selectedTags.includes(tag.name) }"
+                      @click="toggleTag(tag.name)"
+                    >
+                      {{ tag.name }}
+                    </div>
+                  </div>
+               </div>
+               
+               <!-- 显示已选择的标签 -->
+               <div v-if="selectedTags.length > 0" class="mt-2">
+                 <div class="text-sm text-gray-600 mb-1">已选择的标签：</div>
+                 <div class="flex flex-wrap gap-2">
+                   <span
+                     v-for="tag in selectedTags"
+                     :key="tag"
+                     class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-800"
+                   >
+                     {{ tag }}
+                     <button
+                       type="button"
+                       @click="removeTag(tag)"
+                       class="ml-1 text-indigo-600 hover:text-indigo-800"
+                     >
+                       ×
+                     </button>
+                   </span>
+                 </div>
+               </div>
+             </div>
+          </div>
+
           <div>
             <label class="label-base">
               摘要
@@ -150,7 +239,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { createArticle, updateArticle } from '@/api/article'
@@ -176,6 +265,12 @@ const selectedFile = ref(null)
 const previewUrl = ref('')
 const uploading = ref(false)
 const uploadProgress = ref(0)
+const newTag = ref('')
+const categories = ref([])
+const tags = ref([])
+const selectedTags = ref([])
+const showTagDropdown = ref(false)
+const showCategoryDropdown = ref(false)
 // 处理图片上传 - 适配md-editor-v3
 const handleImageUpload = async (files, callback) => {
   try {
@@ -207,6 +302,8 @@ const handleImageUpload = async (files, callback) => {
 
 
 
+
+
 const form = ref({
   title: '',
   summary: '',
@@ -215,7 +312,9 @@ const form = ref({
   publishTime: new Date().toISOString().slice(0, 16),
   views: 0,
   likes: 0,
-  comments: 0
+  comments: 0,
+  category: '',
+  tags: []
 })
 
 // 初始化表单数据
@@ -229,6 +328,10 @@ const initializeForm = async () => {
       content: refreshedContent,
       publishTime: formatDateForInput(props.article.publishTime)
     }
+    
+    // 设置选中的标签
+    selectedTags.value = props.article.tags || []
+    
     // 如果有封面URL，设置预览
     if (props.article.coverUrl) {
       getFileUrl(props.article.coverUrl).then(url => {
@@ -239,9 +342,6 @@ const initializeForm = async () => {
     }
   }
 }
-
-// 执行初始化
-initializeForm()
 
 // 文件选择处理
 const handleFileSelect = async (event) => {
@@ -305,6 +405,102 @@ const uploadFile = async (file) => {
   }
 }
 
+// 切换标签下拉框显示状态
+const toggleTagDropdown = () => {
+  showTagDropdown.value = !showTagDropdown.value
+  showCategoryDropdown.value = false // 关闭分类下拉框
+}
+
+// 切换分类下拉框显示状态
+const toggleCategoryDropdown = () => {
+  showCategoryDropdown.value = !showCategoryDropdown.value
+  showTagDropdown.value = false // 关闭标签下拉框
+}
+
+// 关闭分类下拉框
+const closeCategoryDropdown = () => {
+  showCategoryDropdown.value = false
+}
+
+// 选择分类
+const selectCategory = (categoryName) => {
+  form.value.category = categoryName
+  closeCategoryDropdown()
+}
+
+// 移除标签
+const removeTag = (tagToRemove) => {
+  selectedTags.value = selectedTags.value.filter(tag => tag !== tagToRemove)
+}
+
+// 切换标签选择状态
+const toggleTag = (tagName) => {
+  if (selectedTags.value.includes(tagName)) {
+    selectedTags.value = selectedTags.value.filter(tag => tag !== tagName)
+  } else {
+    selectedTags.value.push(tagName)
+  }
+}
+
+// 点击外部关闭下拉框
+const handleClickOutside = (event) => {
+  if (!event.target.closest('.relative')) {
+    showTagDropdown.value = false
+    showCategoryDropdown.value = false
+  }
+}
+
+// 组件挂载时初始化
+onMounted(async () => {
+  // 添加点击外部关闭下拉框的事件监听器
+  document.addEventListener('click', handleClickOutside)
+  
+  loadCategoriesAndTags()
+  await initializeForm()
+})
+
+// 组件卸载时清理事件监听器
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
+// 初始化分类和标签模拟数据
+const loadCategoriesAndTags = () => {
+  // 分类模拟数据
+  categories.value = [
+    { id: 1, name: '技术' },
+    { id: 2, name: '生活' },
+    { id: 3, name: '随笔' },
+    { id: 4, name: '教程' },
+    { id: 5, name: '项目' },
+    { id: 6, name: '前端' },
+    { id: 7, name: '后端' },
+    { id: 8, name: '数据库' }
+  ]
+  
+  // 标签模拟数据
+  tags.value = [
+    { id: 1, name: 'Vue' },
+    { id: 2, name: 'JavaScript' },
+    { id: 3, name: 'CSS' },
+    { id: 4, name: 'HTML' },
+    { id: 5, name: 'Node.js' },
+    { id: 6, name: 'React' },
+    { id: 7, name: 'TypeScript' },
+    { id: 8, name: 'Python' },
+    { id: 9, name: 'Java' },
+    { id: 10, name: 'Spring Boot' },
+    { id: 11, name: 'MySQL' },
+    { id: 12, name: 'Redis' },
+    { id: 13, name: 'Docker' },
+    { id: 14, name: 'Git' },
+    { id: 15, name: '算法' },
+    { id: 16, name: '数据结构' },
+    { id: 17, name: '设计模式' },
+    { id: 18, name: '微服务' }
+  ]
+}
+
 const handleSubmit = async () => {
   loading.value = true
   
@@ -318,7 +514,8 @@ const handleSubmit = async () => {
     // 准备提交数据，将datetime-local格式转换为ISO格式
     const submitData = {
       ...form.value,
-      publishTime: formatDateForSubmit(form.value.publishTime)
+      publishTime: formatDateForSubmit(form.value.publishTime),
+      tags: selectedTags.value
     }
     
     if (props.isEdit) {

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tg.blog.backend.dao.TagMapper">
+    <resultMap id="TagDTOResultMap" type="com.tg.blog.backend.dto.TagDTO">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="slug" column="slug" />
+        <result property="description" column="description" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.tg.blog.backend.entity.Tag">
+        INSERT INTO tag (name, slug, description)
+        VALUES (#{name}, #{slug}, #{description})
+    </insert>
+
+    <update id="update" parameterType="com.tg.blog.backend.entity.Tag">
+        UPDATE tag SET
+            name = #{name},
+            slug = #{slug},
+            description = #{description}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM tag WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="TagDTOResultMap" parameterType="long">
+        SELECT id, name, slug, description FROM tag WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="TagDTOResultMap">
+        SELECT id, name, slug, description FROM tag
+    </select>
+</mapper>

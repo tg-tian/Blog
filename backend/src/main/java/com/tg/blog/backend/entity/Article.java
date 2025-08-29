@@ -27,5 +27,8 @@ public class Article {
     
     private Long comments;
 
+    private Long categoryId;
+
     private Integer deleted;
+
 }
