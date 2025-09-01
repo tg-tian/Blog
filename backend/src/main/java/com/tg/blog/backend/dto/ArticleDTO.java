@@ -17,5 +17,9 @@ public class ArticleDTO {
     private Integer views;
     private Integer likes;
     private Integer comments;
-    private List<String> tags;
+    private Long categoryId;
+    private List<Long> tagIds;
+    private CategoryDTO category;
+    private List<TagDTO> tags;
+    
 }

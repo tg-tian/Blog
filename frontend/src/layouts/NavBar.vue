@@ -1,5 +1,6 @@
 <template>
-    <nav class="bg-white/80 backdrop-blur-md text-gray-800 px-6 py-4 flex items-center shadow-md border-b border-gray-200 font-medium text-lg">
+    <nav
+        class="bg-white text-gray-800 px-6 py-4 flex items-center shadow-md border-b border-gray-200 font-medium text-lg fixed top-0 left-0 right-0 h-12 z-[99999]">
         <div class="flex space-x-8">
             <router-link v-for="link in navLinks" :key="link.to" :to="link.to"
                 class="relative flex items-center space-x-2 px-3 py-2 rounded-lg tracking-wide hover:text-blue-600 hover:bg-gray-100 transition-all duration-200"

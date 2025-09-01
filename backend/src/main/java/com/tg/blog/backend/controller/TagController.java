@@ -28,9 +28,10 @@ public class TagController {
         tagService.add(tagDTO);
         return ResponseEntity.success("Tag added successfully");
     }
-
-    @PutMapping
-    public ResponseEntity<String> update(@RequestBody TagDTO tagDTO) {
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody TagDTO tagDTO) {
+        tagDTO.setId(id);
         tagService.update(tagDTO);
         return ResponseEntity.success("Tag updated successfully");
     }

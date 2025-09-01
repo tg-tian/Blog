@@ -4,14 +4,23 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.tg.blog.backend.common.exception.ArticleException;
 import com.tg.blog.backend.dao.ArticleMapper;
+import com.tg.blog.backend.dao.ArticleTagMapper;
+import com.tg.blog.backend.dao.CategoryMapper;
+import com.tg.blog.backend.dao.TagMapper;
 import com.tg.blog.backend.dto.ArticleDTO;
 import com.tg.blog.backend.entity.Article;
+import com.tg.blog.backend.entity.Category;
+import com.tg.blog.backend.entity.Tag;
 import com.tg.blog.backend.mapper.ArticleConverter;
+import com.tg.blog.backend.mapper.CategoryConverter;
+import com.tg.blog.backend.mapper.TagConverter;
 import com.tg.blog.backend.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,20 +29,24 @@ public class ArticleServiceImpl implements ArticleService {
     @Autowired
     ArticleConverter articleConverter;
     @Autowired
+    CategoryConverter categoryConverter;
+    @Autowired
+    TagConverter tagConverter;
+    @Autowired
     ArticleMapper articleMapper;
+    @Autowired
+    ArticleTagMapper articleTagMapper;
+    @Autowired
+    CategoryMapper categoryMapper;
+    @Autowired
+    TagMapper tagMapper;
 
+    @Transactional
     @Override
     public ArticleDTO createArticle(ArticleDTO articleDTO) {
         Article article = articleConverter.toEntity(articleDTO);
-        article.setViews(0L);
-        article.setLikes(0L);
-        article.setComments(0L);
-        article.setPublishTime(LocalDateTime.now());
-        article.setUpdateTime(LocalDateTime.now());
-        int rows = articleMapper.insertArticle(article);
-        if (rows != 1) {
-            throw new ArticleException("Failed to insert article into database");
-        }
+        articleMapper.insertArticle(article);
+        articleTagMapper.batchInsertArticleTags(article.getId(), articleDTO.getTagIds());
         return articleConverter.toDTO(article);
     }
 
@@ -43,7 +56,15 @@ public class ArticleServiceImpl implements ArticleService {
         if (article == null) {
             throw new ArticleException("Article not found with id: " + id);
         }
-        return articleConverter.toDTO(article);
+        ArticleDTO articleDTO = articleConverter.toDTO(article);
+        Category category = categoryMapper.selectById(article.getCategoryId());
+        articleDTO.setCategory(categoryConverter.toDTO(category));
+        List<Long> tagIds = articleTagMapper.selectByArticleId(article.getId());
+        if(tagIds!=null && !tagIds.isEmpty()){
+            List<Tag> tags = tagMapper.selectByIds(tagIds);
+            articleDTO.setTags(tagConverter.toDTOList(tags));
+        }
+        return articleDTO;
     }
 
     @Override
@@ -52,17 +73,41 @@ public class ArticleServiceImpl implements ArticleService {
         if (articles.isEmpty()) {
             throw new ArticleException("No articles found");
         }
-        return articleConverter.toDTOList(articles);
+        List<ArticleDTO> result = new ArrayList<>();
+        for (Article article : articles) {
+            ArticleDTO dto = articleConverter.toDTO(article);
+            Category category = categoryMapper.selectById(article.getCategoryId());
+            dto.setCategory(categoryConverter.toDTO(category));
+            List<Long> tagIds = articleTagMapper.selectByArticleId(article.getId());
+            if(tagIds!=null && !tagIds.isEmpty()){
+                List<Tag> tags = tagMapper.selectByIds(tagIds);
+                dto.setTags(tagConverter.toDTOList(tags));
+            }
+            result.add(dto);
+        }
+        return result;
     }
 
     @Override
     public PageInfo<ArticleDTO> getArticlesByPage(int page, int size) {
         PageHelper.startPage(page, size);
         List<Article> articles = articleMapper.selectAllArticles();
-        List<ArticleDTO> articleDTOs = articleConverter.toDTOList(articles);
-        return new PageInfo<>(articleDTOs);
+        List<ArticleDTO> result = new ArrayList<>();
+        for (Article article : articles) {
+            ArticleDTO dto = articleConverter.toDTO(article);
+            Category category = categoryMapper.selectById(article.getCategoryId());
+            dto.setCategory(categoryConverter.toDTO(category));
+            List<Long> tagIds = articleTagMapper.selectByArticleId(article.getId());
+            if(tagIds!=null && !tagIds.isEmpty()){
+                List<Tag> tags = tagMapper.selectByIds(tagIds);
+                dto.setTags(tagConverter.toDTOList(tags));
+            }
+            result.add(dto);
+        }
+        return new PageInfo<>(result);
     }
 
+    @Transactional
     @Override
     public ArticleDTO updateArticle(Long id, ArticleDTO articleDTO) {
         Article existingArticle = articleMapper.selectArticleById(id);
@@ -70,12 +115,10 @@ public class ArticleServiceImpl implements ArticleService {
             throw new ArticleException("Cannot update. Article not found with id: " + id);
         }
         Article article = articleConverter.toEntity(articleDTO);
-        article.setId(id);  // 保证更新的是这条记录
-        article.setUpdateTime(LocalDateTime.now());
-        int rows = articleMapper.updateArticle(article);
-        if (rows != 1) {
-            throw new ArticleException("Failed to update article with id: " + id);
-        }
+        article.setId(id);
+        articleMapper.updateArticle(article);
+        articleTagMapper.deleteByArticleId(article.getId());
+        articleTagMapper.batchInsertArticleTags(article.getId(), articleDTO.getTagIds());
         Article updatedArticle = articleMapper.selectArticleById(id);
         return articleConverter.toDTO(updatedArticle);
     }

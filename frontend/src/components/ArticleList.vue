@@ -1,5 +1,13 @@
 <template>
     <div class="content-spacing">
+        <div class="border-b-2 border-gray-300 pb-4 mb-4">
+            <h2 class="text-3xl font-bold text-gray-900 flex items-center">
+                <svg class="w-8 h-8 mr-3 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                </svg>
+                文章列表
+            </h2>
+        </div>
         <div v-for="item in articles" :key="item.id" class="card-base overflow-hidden card-hover">
             <router-link :to="`/article/${item.id}`" class="block">
                 <!-- 文章内容 -->
@@ -15,7 +23,7 @@
                     <div class="mt-4">
                         <ArticleStats :publish-time="item.publishTime" :update-time="item.updateTime"
                             :views="item.views || 0" :likes="item.likes || 0" :comments="item.comments || 0"
-                            :word-count="item.wordCount || 0" />
+                            :tags="item.tags || []" />
                     </div>
                 </div>
 
@@ -38,7 +46,7 @@ const coverUrlCache = ref({})
 // 预加载所有封面URL
 const loadCoverUrls = async () => {
     if (!props.articles) return
-    
+
     const promises = props.articles
         .filter(article => article.coverUrl && !coverUrlCache.value[article.coverUrl])
         .map(async (article) => {
@@ -50,7 +58,7 @@ const loadCoverUrls = async () => {
                 coverUrlCache.value[article.coverUrl] = ''
             }
         })
-    
+
     await Promise.all(promises)
 }
 
@@ -62,4 +70,3 @@ const handleImageError = (event) => {
     event.target.style.display = 'none'
 }
 </script>
-

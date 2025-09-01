@@ -8,8 +8,12 @@ import java.util.List;
 @Mapper
 public interface CategoryMapper {
     int insert(Category category);
+    
     int update(Category category);
+    
     int deleteById(Long id);
-    CategoryDTO selectById(Long id);
-    List<CategoryDTO> selectAll();
+    
+    Category selectById(Long id);
+    
+    List<Category> selectAll();
 }

@@ -28,9 +28,10 @@ public class CategoryController {
         categoryService.add(categoryDTO);
         return ResponseEntity.success("Category added successfully");
     }
-
-    @PutMapping
-    public ResponseEntity<String> update(@RequestBody CategoryDTO categoryDTO) {
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO) {
+        categoryDTO.setId(id);
         categoryService.update(categoryDTO);
         return ResponseEntity.success("Category updated successfully");
     }

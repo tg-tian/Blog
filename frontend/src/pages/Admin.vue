@@ -9,10 +9,8 @@
           </div>
           <div class="flex items-center space-x-4">
             <span class="text-sm text-gray-700">欢迎，{{ userStore.username }}</span>
-            <button
-              @click="handleLogout"
-              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-            >
+            <button @click="handleLogout"
+              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium">
               退出登录
             </button>
           </div>
@@ -24,26 +22,36 @@
       <!-- 标签页导航 -->
       <div class="mb-6">
         <nav class="flex space-x-8">
-          <button
-          @click="activeTab = 'articles'"
-          :class="[
+          <button @click="activeTab = 'articles'" :class="[
             'py-2 px-1 border-b-2 font-medium text-sm',
             activeTab === 'articles'
               ? 'border-indigo-500 text-indigo-600'
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          ]"
-        >
-          文章管理
-        </button>
-          <button
-            @click="activeTab = 'projects'"
-            :class="[
-              'py-2 px-1 border-b-2 font-medium text-sm',
-              activeTab === 'projects'
-                ? 'border-indigo-500 text-indigo-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            ]"
-          >
+          ]">
+            文章管理
+          </button>
+          <button @click="activeTab = 'categories'" :class="[
+            'py-2 px-1 border-b-2 font-medium text-sm',
+            activeTab === 'categories'
+              ? 'border-indigo-500 text-indigo-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          ]">
+            分类管理
+          </button>
+          <button @click="activeTab = 'tags'" :class="[
+            'py-2 px-1 border-b-2 font-medium text-sm',
+            activeTab === 'tags'
+              ? 'border-indigo-500 text-indigo-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          ]">
+            标签管理
+          </button>
+          <button @click="activeTab = 'projects'" :class="[
+            'py-2 px-1 border-b-2 font-medium text-sm',
+            activeTab === 'projects'
+              ? 'border-indigo-500 text-indigo-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          ]">
             项目管理
           </button>
         </nav>
@@ -52,6 +60,8 @@
       <!-- 内容区域 -->
       <div class="bg-white shadow rounded-lg">
         <ArticleManager v-if="activeTab === 'articles'" />
+        <CategoryManager v-if="activeTab === 'categories'" />
+        <TagManager v-if="activeTab === 'tags'" />
         <ProjectManager v-if="activeTab === 'projects'" />
       </div>
     </div>
@@ -64,6 +74,8 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { logout } from '@/api/auth'
 import ArticleManager from '@/components/admin/ArticleManager.vue'
+import CategoryManager from '@/components/admin/CategoryManager.vue'
+import TagManager from '@/components/admin/TagManager.vue'
 import ProjectManager from '@/components/admin/ProjectManager.vue'
 
 const router = useRouter()

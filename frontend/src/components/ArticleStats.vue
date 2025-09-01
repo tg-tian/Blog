@@ -11,7 +11,8 @@
         </svg>
         <span class="text-xs font-medium">{{ formatDate(updateTime) }}</span>
       </div>
-      <div v-else class="flex items-center space-x-1 text-gray-600 hover:text-indigo-500 transition-colors" title="发布时间">
+      <div v-else class="flex items-center space-x-1 text-gray-600 hover:text-indigo-500 transition-colors"
+        title="发布时间">
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <path
             d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z" />
@@ -45,8 +46,11 @@
         </svg>
         <span class="text-sm font-medium">{{ formatNumber(comments) }}</span>
       </div>
+    </div>
 
-
+    <!-- 标签显示 -->
+    <div v-if="tags.length" class="hidden md:flex flex-wrap gap-2 justify-end">
+      <Tag v-for="tag in tags" :key="tag.id" :name="tag.name" :color="tag.color" />
     </div>
   </div>
 </template>
@@ -54,6 +58,7 @@
 <script setup>
 import { computed } from 'vue'
 import { formatDateForDisplay } from '@/utils/dateUtils'
+import Tag from './Tag.vue'
 
 // Props定义
 const props = defineProps({
@@ -77,6 +82,10 @@ const props = defineProps({
     type: Number,
     default: 0
   },
+  tags: {
+    type: Array,
+    default: () => []
+  }
 })
 
 // 格式化日期

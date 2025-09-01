@@ -6,24 +6,24 @@
 <mapper namespace="com.tg.blog.backend.dao.ArticleMapper">
     <insert id="insertArticle" parameterType="com.tg.blog.backend.entity.Article" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO article(title, summary, content, cover_url, views,
-                            likes, comments, publish_time, update_time)
+                            likes, comments, publish_time, update_time, category_id)
         VALUES (#{title}, #{summary} ,#{content}, #{coverUrl},
                 #{views}, #{likes}, #{comments},
-                #{publishTime}, #{updateTime})
+                #{publishTime}, #{updateTime}, #{categoryId})
     </insert>
 
     <select id="selectArticleById" parameterType="long"
             resultType="com.tg.blog.backend.entity.Article">
         SELECT id, title, summary, content, cover_url AS coverUrl,
                views, likes, comments, publish_time AS publishTime,
-               update_time AS updateTime, deleted
+               update_time AS updateTime, deleted, category_id AS categoryId
         FROM article
         WHERE id = #{id} AND deleted = 0
     </select>
     <select id="selectAllArticles" resultType="com.tg.blog.backend.entity.Article">
         select id, title, summary, content, cover_url AS coverUrl,
                views, likes, comments, publish_time AS publishTime,
-               update_time AS updateTime, deleted
+               update_time AS updateTime, deleted, category_id AS categoryId
         FROM article
         WHERE deleted = 0
     </select>
@@ -38,7 +38,8 @@
             likes = #{likes},
             comments = #{comments},
             publish_time = #{publishTime},
-            update_time = #{updateTime}
+            update_time = #{updateTime},
+            category_id = #{categoryId}
         WHERE id = #{id} AND deleted = 0
     </update>
 

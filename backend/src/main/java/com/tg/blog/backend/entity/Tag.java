@@ -8,5 +8,5 @@ public class Tag {
     private String name;
     private String slug;
     private String description;
+    private String color;
 }
-

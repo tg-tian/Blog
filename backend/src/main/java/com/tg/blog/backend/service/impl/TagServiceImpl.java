@@ -3,6 +3,7 @@ package com.tg.blog.backend.service.impl;
 import com.tg.blog.backend.dao.TagMapper;
 import com.tg.blog.backend.dto.TagDTO;
 import com.tg.blog.backend.entity.Tag;
+import com.tg.blog.backend.mapper.TagConverter;
 import com.tg.blog.backend.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,33 +13,30 @@ import java.util.List;
 public class TagServiceImpl implements TagService {
     @Autowired
     private TagMapper tagMapper;
+    @Autowired
+    private TagConverter tagConverter;
 
     @Override
     public TagDTO getById(Long id) {
-        return tagMapper.selectById(id);
+        Tag tag = tagMapper.selectById(id);
+        return tagConverter.toDTO(tag);
     }
 
     @Override
     public List<TagDTO> getAll() {
-        return tagMapper.selectAll();
+        List<Tag> tags = tagMapper.selectAll();
+        return tagConverter.toDTOList(tags);
     }
 
     @Override
     public void add(TagDTO tagDTO) {
-        Tag tag = new Tag();
-        tag.setName(tagDTO.getName());
-        tag.setSlug(tagDTO.getSlug());
-        tag.setDescription(tagDTO.getDescription());
+        Tag tag = tagConverter.toEntity(tagDTO);
         tagMapper.insert(tag);
     }
 
     @Override
     public void update(TagDTO tagDTO) {
-        Tag tag = new Tag();
-        tag.setId(tagDTO.getId());
-        tag.setName(tagDTO.getName());
-        tag.setSlug(tagDTO.getSlug());
-        tag.setDescription(tagDTO.getDescription());
+        Tag tag = tagConverter.toEntity(tagDTO);
         tagMapper.update(tag);
     }
 
@@ -47,3 +45,4 @@ public class TagServiceImpl implements TagService {
         tagMapper.deleteById(id);
     }
 }
+

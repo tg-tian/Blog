@@ -184,39 +184,8 @@
     @apply flex justify-between items-center mb-4;
   }
 
-  /* ========== Markdown 样式 ========== */
-  /* 代码块样式 */
-  .markdown-content pre {
-    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4;
-  }
 
-  .markdown-content pre code {
-    @apply bg-transparent text-inherit font-mono text-sm leading-relaxed;
-  }
 
-  /* 行内代码样式 */
-  .markdown-content code {
-    @apply bg-gray-100 text-gray-800 px-2 py-1 rounded font-mono text-sm;
-  }
-
-  /* 确保pre中的code不应用行内样式 */
-  .markdown-content pre code {
-    @apply bg-transparent px-0 py-0;
-  }
-
-  /* ========== 修复md-editor-v3组件z-index问题 ========== */
-  /* 确保导航栏能覆盖md-editor的所有元素 */
-  .md-editor-preview,
-  .md-editor-preview *,
-  .md-editor-preview-wrapper,
-  .md-editor-preview-wrapper *,
-  .md-editor,
-  .md-editor *,
-  .md-editor-code,
-  .md-editor-code *,
-  details,
-  details * {
-    position: relative !important;
-    z-index: auto !important;
-  }
+  
+ 
 }

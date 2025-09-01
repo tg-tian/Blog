@@ -3,6 +3,7 @@ package com.tg.blog.backend.service.impl;
 import com.tg.blog.backend.dao.CategoryMapper;
 import com.tg.blog.backend.dto.CategoryDTO;
 import com.tg.blog.backend.entity.Category;
+import com.tg.blog.backend.mapper.CategoryConverter;
 import com.tg.blog.backend.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,35 +13,30 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryMapper categoryMapper;
+    @Autowired
+    private CategoryConverter categoryConverter;
 
     @Override
     public CategoryDTO getById(Long id) {
-        return categoryMapper.selectById(id);
+        Category category = categoryMapper.selectById(id);
+        return categoryConverter.toDTO(category);
     }
 
     @Override
     public List<CategoryDTO> getAll() {
-        return categoryMapper.selectAll();
+        List<Category> categories = categoryMapper.selectAll();
+        return categoryConverter.toDTOList(categories);
     }
 
     @Override
     public void add(CategoryDTO categoryDTO) {
-        Category category = new Category();
-        category.setName(categoryDTO.getName());
-        category.setSlug(categoryDTO.getSlug());
-        category.setDescription(categoryDTO.getDescription());
-        category.setParentId(categoryDTO.getParentId());
+        Category category = categoryConverter.toEntity(categoryDTO);
         categoryMapper.insert(category);
     }
 
     @Override
     public void update(CategoryDTO categoryDTO) {
-        Category category = new Category();
-        category.setId(categoryDTO.getId());
-        category.setName(categoryDTO.getName());
-        category.setSlug(categoryDTO.getSlug());
-        category.setDescription(categoryDTO.getDescription());
-        category.setParentId(categoryDTO.getParentId());
+        Category category = categoryConverter.toEntity(categoryDTO);
         categoryMapper.update(category);
     }
 

@@ -33,7 +33,31 @@ export const extractImageObjectNames = (markdownText) => {
 }
 
 /**
- * 更新 Markdown 文本中的图片链接
+ * 更新 Markdown 文本中的图片链接（仅更新URL，不包裹HTML）
+ * @param {string} markdownText - 原始 Markdown 文本
+ * @param {Object} urlMapping - objectName 到新 URL 的映射 { objectName: newUrl }
+ * @returns {string} 更新后的 Markdown 文本
+ */
+export const updateMarkdownImageUrlsOnly = (markdownText, urlMapping) => {
+  if (!markdownText || !urlMapping) return markdownText
+  
+  return markdownText.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, oldUrl) => {
+    // 从旧 URL 中提取 objectName（格式为 /prefix/name）
+    const objectNameMatch = oldUrl.match(/(\/[^/?]+\/[^/?]+)(?:\?|$)/)
+    if (objectNameMatch && objectNameMatch[1]) {
+      const objectName = objectNameMatch[1]
+      const newUrl = urlMapping[objectName]
+      if (newUrl) {
+        // 只更新URL，保持Markdown格式
+        return `![${alt}](${newUrl})`
+      }
+    }
+    return match // 如果没有找到对应的新 URL，保持原样
+  })
+}
+
+/**
+ * 更新 Markdown 文本中的图片链接（包裹HTML标签）
  * @param {string} markdownText - 原始 Markdown 文本
  * @param {Object} urlMapping - objectName 到新 URL 的映射 { objectName: newUrl }
  * @returns {string} 更新后的 Markdown 文本
@@ -57,7 +81,53 @@ export const updateMarkdownImageUrls = (markdownText, urlMapping) => {
 }
 
 /**
- * 刷新 Markdown 文本中的所有图片链接
+ * 刷新 Markdown 文本中的所有图片链接（仅更新URL，用于编辑）
+ * @param {string} markdownText - 原始 Markdown 文本
+ * @returns {Promise<string>} 更新后的 Markdown 文本
+ */
+export const refreshMarkdownImageUrlsForEdit = async (markdownText) => {
+  if (!markdownText) return markdownText
+  
+  try {
+    // 提取所有图片的 objectName
+    const objectNames = extractImageObjectNames(markdownText)
+    
+    if (objectNames.length === 0) {
+      return markdownText
+    }
+    
+    // 并发获取所有图片的新 URL
+    const urlPromises = objectNames.map(async (objectName) => {
+      try {
+        const newUrl = await getFileUrl(objectName)
+        return { objectName, newUrl }
+      } catch (error) {
+        console.error(`获取图片 URL 失败: ${objectName}`, error)
+        return { objectName, newUrl: null }
+      }
+    })
+    
+    const urlResults = await Promise.all(urlPromises)
+    
+    // 创建 objectName 到新 URL 的映射
+    const urlMapping = {}
+    urlResults.forEach(({ objectName, newUrl }) => {
+      if (newUrl) {
+        urlMapping[objectName] = newUrl
+      }
+    })
+    
+    // 更新 Markdown 文本中的图片链接（仅更新URL，不包裹HTML）
+    return updateMarkdownImageUrlsOnly(markdownText, urlMapping)
+    
+  } catch (error) {
+    console.error('刷新 Markdown 图片链接失败:', error)
+    return markdownText
+  }
+}
+
+/**
+ * 刷新 Markdown 文本中的所有图片链接（包裹HTML标签，用于显示）
  * @param {string} markdownText - 原始 Markdown 文本
  * @returns {Promise<string>} 更新后的 Markdown 文本
  */
@@ -93,7 +163,7 @@ export const refreshMarkdownImageUrls = async (markdownText) => {
       }
     })
     
-    // 更新 Markdown 文本中的图片链接
+    // 更新 Markdown 文本中的图片链接（包裹HTML标签）
     return updateMarkdownImageUrls(markdownText, urlMapping)
     
   } catch (error) {
