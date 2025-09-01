@@ -62,6 +62,82 @@
     @apply text-gray-400 hover:text-gray-600 transition-colors;
   }
 
+  /* ========== 错误和状态样式 ========== */
+  /* 错误消息容器 */
+  .error-container {
+    @apply bg-red-50 border border-red-200 rounded-lg p-4 mb-4;
+  }
+
+  /* 错误文本 */
+  .error-text {
+    @apply text-red-600 text-sm font-medium;
+  }
+
+  /* 错误图标 */
+  .error-icon {
+    @apply w-5 h-5 text-red-500 mr-2 flex-shrink-0;
+  }
+
+  /* 成功消息容器 */
+  .success-container {
+    @apply bg-green-50 border border-green-200 rounded-lg p-4 mb-4;
+  }
+
+  /* 成功文本 */
+  .success-text {
+    @apply text-green-600 text-sm font-medium;
+  }
+
+  /* 成功图标 */
+  .success-icon {
+    @apply w-5 h-5 text-green-500 mr-2 flex-shrink-0;
+  }
+
+  /* 警告消息容器 */
+  .warning-container {
+    @apply bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4;
+  }
+
+  /* 警告文本 */
+  .warning-text {
+    @apply text-yellow-600 text-sm font-medium;
+  }
+
+  /* 警告图标 */
+  .warning-icon {
+    @apply w-5 h-5 text-yellow-500 mr-2 flex-shrink-0;
+  }
+
+  /* 信息消息容器 */
+  .info-container {
+    @apply bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4;
+  }
+
+  /* 信息文本 */
+  .info-text {
+    @apply text-blue-600 text-sm font-medium;
+  }
+
+  /* 信息图标 */
+  .info-icon {
+    @apply w-5 h-5 text-blue-500 mr-2 flex-shrink-0;
+  }
+
+  /* 加载状态 */
+  .loading-container {
+    @apply flex items-center justify-center py-8;
+  }
+
+  /* 加载文本 */
+  .loading-text {
+    @apply text-gray-500 text-sm;
+  }
+
+  /* 重试按钮 */
+  .btn-retry {
+    @apply text-blue-600 hover:text-blue-800 text-sm font-medium underline cursor-pointer transition-colors;
+  }
+
   /* ========== 表单元素 ========== */
   /* 输入框 */
   .input-base {

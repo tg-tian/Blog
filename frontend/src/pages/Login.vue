@@ -34,9 +34,12 @@
           </div>
         </div>
 
-        <div v-if="error" class="text-red-600 text-sm text-center">
-          {{ error }}
-        </div>
+        <StatusMessage 
+          v-if="error" 
+          type="error" 
+          :message="error" 
+          :visible="!!error" 
+        />
 
         <div>
           <button
@@ -57,6 +60,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { login } from '@/api/auth'
+import StatusMessage from '@/components/StatusMessage.vue'
 
 const router = useRouter()
 const userStore = useUserStore()

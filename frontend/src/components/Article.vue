@@ -1,11 +1,16 @@
 <template>
-  <div v-if="loading" class="text-center py-8">
-    <div class="text-gray-500">加载中...</div>
-  </div>
-  <div v-else-if="error" class="text-center py-8">
-    <div class="text-red-500">{{ error }}</div>
-    <button @click="loadArticle" class="btn-primary mt-4">重试</button>
-  </div>
+  <StatusMessage 
+    v-if="loading" 
+    type="loading" 
+    message="加载中..." 
+  />
+  <StatusMessage 
+    v-else-if="error" 
+    type="error" 
+    :message="error" 
+    :show-retry="true" 
+    @retry="loadArticle" 
+  />
   <div v-else-if="article" class="max-w-4xl mx-auto p-6">
     <div class="card-base card-content">
       <!-- 文章头部 -->
@@ -74,6 +79,7 @@ import { MdPreview } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import Comment from '@/components/Comment.vue'
 import ArticleStats from '@/components/ArticleStats.vue'
+import StatusMessage from '@/components/StatusMessage.vue'
 
 const route = useRoute()
 const router = useRouter()

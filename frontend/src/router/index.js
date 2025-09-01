@@ -20,7 +20,7 @@ const routes = [
         children: [
             { path: 'article/:id', component: Article },
             { path: 'about', component: About },
-            { path: 'blog', component: Blogs },
+            { path: 'blogs', component: Blogs },
             { path: 'projects', component: Projects }
         ]
     },

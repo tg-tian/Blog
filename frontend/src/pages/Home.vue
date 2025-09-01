@@ -42,9 +42,11 @@
                     <SideBar />
                 </aside>
                 <main class="flex-1  mt-12 mr-10">
-                    <div v-if="loading" class="text-center py-8">
-                        <div class="text-gray-500">加载中...</div>
-                    </div>
+                    <StatusMessage 
+                        v-if="loading" 
+                        type="loading" 
+                        message="加载中..." 
+                    />
                     <div v-else class="m-4 space-y-4">
                         <ArticleList :articles="articles" />
                         <ProjectList />
@@ -63,6 +65,7 @@ import ProjectList from '@/components/ProjectList.vue'
 import NavBar from '@/layouts/NavBar.vue'
 import SideBar from '@/layouts/SideBar.vue'
 import Footer from '@/layouts/Footer.vue'
+import StatusMessage from '@/components/StatusMessage.vue'
 import { getArticles } from '@/api/article'
 
 const loading = ref(true)

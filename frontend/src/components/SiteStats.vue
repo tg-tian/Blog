@@ -6,6 +6,23 @@
             <div class="w-8 h-0.5 bg-gray-400 mx-auto rounded"></div>
         </div>
 
+        <!-- 加载状态 -->
+        <div v-if="loading" class="text-center py-4">
+            <div class="text-gray-500 text-sm">加载中...</div>
+        </div>
+
+        <!-- 错误状态 -->
+        <StatusMessage 
+            v-if="error" 
+            type="error" 
+            :message="error" 
+            :show-retry="true" 
+            @retry="loadStats" 
+        />
+
+        <!-- 统计数据 -->
+        <div v-else>
+
         <!-- 统计数据网格 -->
         <div class="space-y-2 mb-3">
             <!-- 总访问量 -->
@@ -17,7 +34,7 @@
                         </svg>
                         <span class="text-caption text-gray-700">访问</span>
                     </div>
-                    <span class="text-sm font-bold text-gray-900">{{ formatNumber(stats.totalViews) }}</span>
+                    <span class="text-sm font-bold text-gray-900">{{ formatNumber(stats.totalVisits) }}</span>
                 </div>
             </div>
 
@@ -81,39 +98,66 @@
         <div class="mt-3 pt-2 border-t border-gray-200">
             <div class="flex justify-between items-center text-xs text-gray-600">
                 <span>今日访问</span>
-                <span class="font-semibold text-gray-800">+{{ stats.todayViews }}</span>
+                <span class="font-semibold text-gray-800">+{{ stats.todayVisits }}</span>
             </div>
             <div class="flex justify-between items-center text-xs text-gray-600 mt-0.5">
                 <span>今日点赞</span>
                 <span class="font-semibold text-gray-800">+{{ stats.todayLikes }}</span>
             </div>
         </div>
+        </div>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { getSiteStats, likeSite } from '@/api/stats'
+import StatusMessage from './StatusMessage.vue'
 
 // 响应式数据
 const stats = ref({
-    totalViews: 12580,
-    totalLikes: 1024,
-    totalArticles: 42,
-    uptime: '168天',
-    todayViews: 89,
-    todayLikes: 12
+    totalViews: 0,
+    totalLikes: 0,
+    totalArticles: 0,
+    uptime: '0天',
+    todayViews: 0,
+    todayLikes: 0
 })
 
 const isLiking = ref(false)
+const loading = ref(true)
+const error = ref('')
 
 // 格式化数字显示
 const formatNumber = (num) => {
+    if (num === undefined || num === null || isNaN(num)) {
+        return '0'
+    }
     if (num >= 10000) {
         return (num / 10000).toFixed(1) + 'w'
     } else if (num >= 1000) {
         return (num / 1000).toFixed(1) + 'k'
     }
     return num.toString()
+}
+
+// 加载统计数据
+const loadStats = async () => {
+    try {
+        loading.value = true
+        error.value = ''
+        const response = await getSiteStats()
+        if (response && response.data) {
+            stats.value = response.data
+        } else {
+            throw new Error('无效的响应数据')
+        }
+    } catch (err) {
+        console.error('加载统计数据失败:', err)
+        
+    } finally {
+        loading.value = false
+    }
 }
 
 // 点赞功能
@@ -123,8 +167,7 @@ const handleLike = async () => {
     isLiking.value = true
     
     try {
-        // 模拟API调用延迟
-        await new Promise(resolve => setTimeout(resolve, 800))
+        await likeSite()
         
         // 更新点赞数
         stats.value.totalLikes += 1
@@ -139,18 +182,7 @@ const handleLike = async () => {
     }
 }
 
-// 模拟实时更新运行时长
-const updateUptime = () => {
-    const startDate = new Date('2024-01-01') // 网站启动日期
-    const now = new Date()
-    const diffTime = Math.abs(now - startDate)
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    stats.value.uptime = `${diffDays}天`
-}
-
 onMounted(() => {
-    updateUptime()
-    // 每小时更新一次运行时长
-    setInterval(updateUptime, 3600000)
+    loadStats()
 })
 </script>

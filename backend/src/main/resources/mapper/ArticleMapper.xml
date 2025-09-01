@@ -70,4 +70,8 @@
         SET comments = #{count}
         WHERE id = #{id} AND deleted = 0
     </update>
+    
+    <select id="countTotalArticles" resultType="long">
+        SELECT COUNT(*) FROM article WHERE deleted = 0
+    </select>
 </mapper>

@@ -24,4 +24,6 @@ public interface ArticleMapper {
     int incrementViews(Long id);
     
     void updateCommentCount(Long id, Integer count);
+    
+    Long countTotalArticles();
 }

@@ -5,9 +5,56 @@ const instance = axios.create({
     timeout: 5000
 })
 
+// 统一错误处理函数
+const handleError = (error) => {
+    let message = '请求失败，请稍后重试'
+    
+    if (error.response) {
+        // 服务器返回了错误状态码
+        const { status, data } = error.response
+        switch (status) {
+            case 400:
+                message = data?.message || '请求参数错误'
+                break
+            case 401:
+                message = '未授权，请重新登录'
+                break
+            case 403:
+                message = '权限不足，无法访问'
+                break
+            case 404:
+                message = '请求的资源不存在'
+                break
+            case 500:
+                message = '服务器内部错误'
+                break
+            case 502:
+                message = '网关错误'
+                break
+            case 503:
+                message = '服务暂时不可用'
+                break
+            default:
+                message = data?.message || `请求失败 (${status})`
+        }
+    } else if (error.request) {
+        // 网络错误或请求超时
+        if (error.code === 'ECONNABORTED') {
+            message = '请求超时，请检查网络连接'
+        } else {
+            message = '网络连接失败，请检查网络设置'
+        }
+    } else {
+        // 其他错误
+        message = error.message || '未知错误'
+    }
+    
+    return Promise.reject(new Error(message))
+}
+
 instance.interceptors.response.use(
     res => res.data,
-    err => Promise.reject(err)
+    handleError
 )
 
 export default instance
