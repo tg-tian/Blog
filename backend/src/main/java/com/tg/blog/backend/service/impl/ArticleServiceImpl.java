@@ -106,7 +106,7 @@ public class ArticleServiceImpl implements ArticleService {
         }
         return new PageInfo<>(result);
     }
-
+    
     @Transactional
     @Override
     public ArticleDTO updateArticle(Long id, ArticleDTO articleDTO) {
@@ -131,4 +131,26 @@ public class ArticleServiceImpl implements ArticleService {
         }
         return true;
     }
+    
+    @Override
+    public void likeArticle(Long id) {
+        articleMapper.incrementLikes(id);
+    }
+    
+    @Override
+    public void commentArticle(Long id) {
+        articleMapper.incrementComments(id);
+    }
+    
+    @Override
+    public void viewArticle(Long id) {
+        articleMapper.incrementViews(id);
+    }
+    
+    @Override
+    public void updateCommentCount(Long id, Integer count) {
+        articleMapper.updateCommentCount(id,count);
+    }
+    
+    
 }

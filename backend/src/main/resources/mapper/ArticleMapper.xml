@@ -46,4 +46,28 @@
     <update id="deleteArticle" parameterType="long">
         UPDATE article SET deleted = 1 WHERE id = #{id}
     </update>
+
+    <update id="incrementLikes" parameterType="long">
+        UPDATE article
+        SET likes = likes + 1
+        WHERE id = #{id} AND deleted = 0
+    </update>
+
+    <update id="incrementComments" parameterType="long">
+        UPDATE article
+        SET comments = comments + 1
+        WHERE id = #{id} AND deleted = 0
+    </update>
+
+    <update id="incrementViews" parameterType="long">
+        UPDATE article
+        SET views = views + 1
+        WHERE id = #{id} AND deleted = 0
+    </update>
+    
+    <update id="updateCommentCount">
+        UPDATE article
+        SET comments = #{count}
+        WHERE id = #{id} AND deleted = 0
+    </update>
 </mapper>

@@ -16,4 +16,12 @@ public interface ArticleMapper {
     int updateArticle(Article article);
     
     int deleteArticle(Long id);
+
+    int incrementLikes(Long id);
+
+    int incrementComments(Long id);
+
+    int incrementViews(Long id);
+    
+    void updateCommentCount(Long id, Integer count);
 }

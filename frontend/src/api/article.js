@@ -14,3 +14,12 @@ export const updateArticle = (id, data) => request.put(`/article/${id}`, data)
 
 // 删除文章
 export const deleteArticle = (id) => request.delete(`/article/${id}`)
+
+// 点赞文章
+export const likeArticle = (id) => request.post(`/article/${id}/like`)
+
+// 增加文章浏览量
+export const incrementViews = (id) => request.post(`/article/${id}/view`)
+
+// 更新文章评论数
+export const updateCommentCount = (id, count) => request.put(`/article/${id}/comments`, { count })

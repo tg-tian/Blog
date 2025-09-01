@@ -23,10 +23,12 @@
       <article class="prose prose-lg max-w-none">
         <MdPreview :modelValue="processedContent" :theme="'light'" :previewTheme="'default'" :codeTheme="'github'" />
       </article>
+
     </div>
 
-    <!-- 返回按钮 -->
-    <div class="m-12 flex justify-center">
+    <!-- 返回按钮和点赞按钮 -->
+    <div class="m-12 flex justify-center items-center space-x-6">
+      <!-- 返回按钮 -->
       <button @click="goBack"
         class="group flex items-center justify-center w-12 h-12 bg-white border-2 border-gray-300 rounded-full shadow-lg hover:shadow-xl hover:border-indigo-500 transition-all duration-300 hover:scale-110"
         title="返回文章列表">
@@ -35,8 +37,27 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
       </button>
+
+      <!-- 点赞按钮 -->
+      <div class="flex items-center space-x-3">
+        <button @click="handleLike" :disabled="isLiking || hasLiked" :class="[
+          'flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105',
+          hasLiked
+            ? 'bg-blue-500 text-white shadow-lg'
+            : 'bg-white border-2 border-gray-300 text-gray-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 shadow-md hover:shadow-lg'
+        ]" :title="hasLiked ? '已点赞' : '点赞文章'">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3z" />
+          </svg>
+          <span class="text-sm font-medium">
+            {{ isLiking ? '点赞中...' : hasLiked ? '已点赞' : '点赞' }}
+          </span>
+          <span class="text-sm font-bold">({{ article.likes || 0 }})</span>
+        </button>
+      </div>
     </div>
-    <Comment />
+    <Comment @commentCountUpdate="handleCommentCountUpdate" />
   </div>
   <div v-else class="text-center py-8">
     <div class="text-gray-500">文章不存在</div>
@@ -46,7 +67,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getArticle } from '@/api/article'
+import { getArticle, likeArticle, incrementViews } from '@/api/article'
 import { getFileUrl } from '@/utils/upload'
 import { refreshMarkdownImageUrls } from '@/utils/markdownUtils'
 import { MdPreview } from 'md-editor-v3'
@@ -62,6 +83,8 @@ const error = ref('')
 const article = ref(null)
 const coverUrl = ref('')
 const processedContent = ref('')
+const isLiking = ref(false)
+const hasLiked = ref(false)
 
 // 加载文章数据
 const loadArticle = async () => {
@@ -77,6 +100,21 @@ const loadArticle = async () => {
 
     const response = await getArticle(articleId)
     article.value = response.data
+
+    // 检查用户是否已点赞过此文章
+    const likedArticles = JSON.parse(localStorage.getItem('likedArticles') || '[]')
+    hasLiked.value = likedArticles.includes(articleId)
+
+    // 增加文章浏览量
+    try {
+      await incrementViews(articleId)
+      // 更新本地显示的浏览量
+      if (article.value.views !== undefined) {
+        article.value.views += 1
+      }
+    } catch (err) {
+      console.error('增加浏览量失败:', err)
+    }
 
     // 处理文章内容中的图片链接
     if (article.value.content) {
@@ -107,6 +145,41 @@ const loadArticle = async () => {
 // 处理图片加载错误
 const handleImageError = () => {
   coverUrl.value = ''
+}
+
+// 点赞文章
+const handleLike = async () => {
+  if (isLiking.value || hasLiked.value) return
+
+  try {
+    isLiking.value = true
+    const articleId = route.params.id
+    await likeArticle(articleId)
+
+    // 更新本地显示的点赞数
+    if (article.value.likes !== undefined) {
+      article.value.likes += 1
+    }
+    hasLiked.value = true
+
+    // 将文章ID保存到localStorage，防止重复点赞
+    const likedArticles = JSON.parse(localStorage.getItem('likedArticles') || '[]')
+    if (!likedArticles.includes(articleId)) {
+      likedArticles.push(articleId)
+      localStorage.setItem('likedArticles', JSON.stringify(likedArticles))
+    }
+  } catch (err) {
+    console.error('点赞失败:', err)
+  } finally {
+    isLiking.value = false
+  }
+}
+
+// 处理评论数更新
+const handleCommentCountUpdate = (newCount) => {
+  if (article.value) {
+    article.value.comments = newCount
+  }
 }
 
 // 返回上一页
