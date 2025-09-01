@@ -184,6 +184,58 @@
     @apply flex justify-between items-center mb-4;
   }
 
+  /* ========== 自定义动画样式 ========== */
+  /* 首页英雄区域动画 */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 1s ease-out forwards;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 0.3s;
+    opacity: 0;
+  }
+
+  .animation-delay-600 {
+     animation-delay: 0.6s;
+     opacity: 0;
+   }
+
+   /* 动态渐变背景 */
+   @keyframes gradientShift {
+     0% {
+       background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+     }
+     25% {
+       background: linear-gradient(-45deg, #4facfe, #00f2fe, #43e97b, #38f9d7);
+     }
+     50% {
+       background: linear-gradient(-45deg, #fa709a, #fee140, #a8edea, #fed6e3);
+     }
+     75% {
+       background: linear-gradient(-45deg, #d299c2, #fef9d7, #667eea, #764ba2);
+     }
+     100% {
+       background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+     }
+   }
+
+   .animated-gradient {
+     background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+     background-size: 400% 400%;
+     animation: gradientShift 15s ease infinite;
+   }
+
 
 
   

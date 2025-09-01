@@ -12,9 +12,12 @@ import { useUserStore } from '@/stores/user'
 const routes = [
     {
         path: '/',
+        component: Home
+    },
+    {
+        path: '/main',
         component: MainLayout,
         children: [
-            { path: '', component: Home },
             { path: 'article/:id', component: Article },
             { path: 'about', component: About },
             { path: 'blog', component: Blogs },

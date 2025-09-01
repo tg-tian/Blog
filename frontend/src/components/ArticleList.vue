@@ -9,7 +9,7 @@
             </h2>
         </div>
         <div v-for="item in articles" :key="item.id" class="card-base overflow-hidden card-hover">
-            <router-link :to="`/article/${item.id}`" class="block">
+            <router-link :to="`/main/article/${item.id}`" class="block">
                 <!-- 文章内容 -->
                 <div class="card-content">
                     <h2 class="heading-lg mb-2">{{ item.title }}</h2>
