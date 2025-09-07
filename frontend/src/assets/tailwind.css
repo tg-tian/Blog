@@ -312,6 +312,102 @@
      animation: gradientShift 15s ease infinite;
    }
 
+   /* ========== Markdown 内容样式 ========== */
+   /* 修复 MdPreview 中列表样式问题 */
+   .prose ol,
+   .prose ul {
+     @apply list-none;
+   }
+
+   .prose ol {
+     counter-reset: list-counter;
+   }
+
+   .prose ol > li {
+     counter-increment: list-counter;
+     @apply relative pl-8 mb-2;
+   }
+
+   .prose ol > li::before {
+     content: counter(list-counter) ".";
+     @apply absolute left-0 top-0 font-medium text-gray-700;
+   }
+
+   .prose ul > li {
+     @apply relative pl-6 mb-2;
+   }
+
+   .prose ul > li::before {
+     content: "•";
+     @apply absolute left-0 top-0 font-bold text-gray-700;
+   }
+
+   /* 嵌套列表样式 */
+   .prose ol ol,
+   .prose ul ul,
+   .prose ol ul,
+   .prose ul ol {
+     @apply mt-2 mb-2;
+   }
+
+   .prose ol ol > li,
+   .prose ul ul > li,
+   .prose ol ul > li,
+   .prose ul ol > li {
+     @apply pl-6;
+   }
+
+   /* 二级有序列表 */
+   .prose ol ol {
+     counter-reset: list-counter-2;
+   }
+
+   .prose ol ol > li {
+     counter-increment: list-counter-2;
+   }
+
+   .prose ol ol > li::before {
+     content: counter(list-counter-2, lower-alpha) ".";
+   }
+
+   /* 二级无序列表 */
+   .prose ul ul > li::before {
+     content: "◦";
+   }
+
+   /* 三级无序列表 */
+   .prose ul ul ul > li::before {
+     content: "▪";
+   }
+
+   /* MdPreview 组件特定样式 */
+   .md-editor-preview ol,
+   .md-editor-preview ul {
+     @apply list-none;
+   }
+
+   .md-editor-preview ol {
+     counter-reset: list-counter;
+   }
+
+   .md-editor-preview ol > li {
+     counter-increment: list-counter;
+     @apply relative pl-8 mb-2;
+   }
+
+   .md-editor-preview ol > li::before {
+     content: counter(list-counter) ".";
+     @apply absolute left-0 top-0 font-medium text-gray-700;
+   }
+
+   .md-editor-preview ul > li {
+     @apply relative pl-6 mb-2;
+   }
+
+   .md-editor-preview ul > li::before {
+     content: "•";
+     @apply absolute left-0 top-0 font-bold text-gray-700;
+   }
 
 
   

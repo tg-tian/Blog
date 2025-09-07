@@ -2,12 +2,14 @@
   <div class="m-4 space-y-4">
     <div class="card-base">
       <div class="card-content">
-        <MdPreview 
-          :modelValue="markdownContent" 
-          :theme="'light'"
-          :previewTheme="'default'"
-          :codeTheme="'github'"
-        />
+        <div class="prose prose-lg max-w-none">
+          <MdPreview 
+            :modelValue="markdownContent" 
+            :theme="'light'"
+            :previewTheme="'default'"
+            :codeTheme="'github'"
+          />
+        </div>
       </div>
     </div>
     <Comment />
