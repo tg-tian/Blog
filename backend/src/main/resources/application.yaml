@@ -2,28 +2,28 @@ spring:
   application:
     name: backend
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/blog?useSSL=false}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:tg852963}
-    driver-class-name: ${DB_DRIVER:com.mysql.cj.jdbc.Driver}
+    url: jdbc:mysql://localhost:3306/blog?useSSL=false
+    username: root
+    password: tg852963
+    driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}     # 如果设置了密码，这里填上
-      database: ${REDIS_DATABASE:0}   # 默认数据库索引
+      host: localhost
+      port: 6379
+      password:     # 如果设置了密码，这里填上
+      database: 0   # 默认数据库索引
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
 
 minio:
-    endpoint: ${MINIO_ENDPOINT:http://localhost:9002}
-    access-key: ${MINIO_ACCESS_KEY:tgapk}
-    secret-key: ${MINIO_SECRET_KEY:tg852963}
-    bucket: ${MINIO_BUCKET:blog}
+    endpoint: http://minio:9002
+    access-key: tgapk
+    secret-key: tg852963
+    bucket: blog
 
 # 网站配置
 site:
-  creation-date: ${SITE_CREATION_DATE:2025-08-31T00:00:00}
+  creation-date: "2025-08-31T00:00:00"
 
 

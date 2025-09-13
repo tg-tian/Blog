@@ -176,7 +176,14 @@ export const getFileUrl = async (objectName) => {
     const response = await getPresignedUrl(objectName)
     const data = response.data || response
     if (data.presignedUrl) {
-      return data.presignedUrl
+      // 将MinIO内部地址转换为nginx代理地址
+      let processedUrl = data.presignedUrl
+      // 替换 http://minio:9002 为 localhost/minio
+      if (processedUrl.includes('http://minio:9002')) {
+        processedUrl = processedUrl.replace('http://minio:9002', 'http://localhost/minio')
+      }
+      
+      return processedUrl
     }
   } catch (error) {
     console.warn('获取预签名URL失败，使用直接URL:', error)
