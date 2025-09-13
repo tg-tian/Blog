@@ -1,0 +1,92 @@
+# 依赖目录
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 构建输出
+dist
+build
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE 和编辑器文件
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git 相关
+.git
+.gitignore
+
+# 日志文件
+logs
+*.log
+
+# 运行时数据
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# 覆盖率目录
+coverage
+.nyc_output
+
+# 依赖锁定文件（保留 package-lock.json）
+yarn.lock
+
+# 可选的 npm 缓存目录
+.npm
+
+# 可选的 eslint 缓存
+.eslintcache
+
+# 微束缓存
+.cache
+
+# 下一个.js 构建输出
+.next
+
+# Nuxt.js 构建输出
+.nuxt
+
+# Gatsby 文件
+.cache/
+public
+
+# Storybook 构建输出
+.out
+.storybook-out
+
+# 临时文件夹
+tmp
+temp
+
+# 文档和说明文件
+README.md
+*.md
+
+# Docker 相关文件（避免递归复制）
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# 其他配置文件
+nginx.conf

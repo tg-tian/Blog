@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  minio:
+    image: minio/minio
+    container_name: minio
+    restart: always
+    ports:
+      - "9002:9002"
+      - "9003:9003"
+    environment:
+      MINIO_ROOT_USER: tgapk
+      MINIO_ROOT_PASSWORD: tg852963
+    volumes:
+      - /home/tgapk/minio_data:/data
+    command: server /data --address ":9002" --console-address ":9003"
+
+  redis:
+    image: redis:7.2
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - /home/tgapk/redis_data:/data
+    command: redis-server --appendonly yes --bind 0.0.0.0
+
+  blog-frontend:
+    image: ${DOCKER_USERNAME}/blog-frontend:latest
+    container_name: blog-frontend
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - /home/tgapk/Blog/nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: tg852963
+      MYSQL_DATABASE: blog   # 初始化数据库
+    ports:
+      - "3306:3306"
+    volumes:
+      - /home/tgapk/mysql_data:/var/lib/mysql
+
+  blog-backend:
+    image: ${DOCKER_USERNAME}/blog-backend:latest
+    container_name: blog-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/blog?useSSL=false"
+      SPRING_DATA_REDIS_HOST: "redis"
+      MINIO_ENDPOINT: "http://minio:9002"
+    depends_on:
+      - mysql
+      - redis
+      - minio
+
