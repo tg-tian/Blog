@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tg.blog.backend.dao.ProjectMapper">
+    
+    <insert id="insertProject" parameterType="com.tg.blog.backend.entity.Project" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO project(title, description, content, cover_image, link, order_num, create_time, update_time)
+        VALUES (#{title}, #{description}, #{content}, #{coverImage}, #{link}, #{orderNum}, #{createTime}, #{updateTime})
+    </insert>
+    
+    <select id="selectProjectById" parameterType="long" resultType="com.tg.blog.backend.entity.Project">
+        SELECT id, title, description, content, cover_image AS coverImage, link, order_num AS orderNum,
+               create_time AS createTime, update_time AS updateTime
+        FROM project
+        WHERE id = #{id}
+    </select>
+    
+    <select id="selectAllProjects" resultType="com.tg.blog.backend.entity.Project">
+        SELECT id, title, description, content, cover_image AS coverImage, link, order_num AS orderNum,
+               create_time AS createTime, update_time AS updateTime
+        FROM project
+        ORDER BY order_num ASC
+    </select>
+    
+    <select id="selectProjectsByOrderNum" resultType="com.tg.blog.backend.entity.Project">
+        SELECT id, title, description, content, cover_image AS coverImage, link, order_num AS orderNum,
+               create_time AS createTime, update_time AS updateTime
+        FROM project
+        ORDER BY order_num ASC, create_time DESC
+    </select>
+    
+    <update id="updateProject" parameterType="com.tg.blog.backend.entity.Project">
+        UPDATE project
+        SET title = #{title},
+            description = #{description},
+            content = #{content},
+            cover_image = #{coverImage},
+            link = #{link},
+            order_num = #{orderNum},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+    
+    <delete id="deleteProject" parameterType="long">
+        DELETE FROM project WHERE id = #{id}
+    </delete>
+    
+    <select id="countTotalProjects" resultType="long">
+        SELECT COUNT(*) FROM project
+    </select>
+    
+</mapper>

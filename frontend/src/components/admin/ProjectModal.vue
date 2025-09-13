@@ -1,16 +1,13 @@
 <template>
-  <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
+  <div class="modal-backdrop">
+    <div class="modal-container">
       <div class="mt-3">
         <!-- 头部 -->
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-medium text-gray-900">
+        <div class="modal-header">
+          <h3 class="heading-lg">
             {{ isEdit ? '编辑项目' : '新建项目' }}
           </h3>
-          <button
-            @click="$emit('close')"
-            class="text-gray-400 hover:text-gray-600"
-          >
+          <button @click="$emit('close')" class="btn-close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
@@ -18,80 +15,90 @@
         </div>
 
         <!-- 表单 -->
-        <form @submit.prevent="handleSubmit" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form @submit.prevent="handleSubmit" class="content-spacing">
+          <div class="grid-2-cols">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                项目名称 *
+              <label class="label-base">
+                项目标题 *
               </label>
-              <input
-                v-model="form.name"
-                type="text"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="请输入项目名称"
-              />
+              <input v-model="form.title" type="text" required class="input-base" placeholder="请输入项目标题" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                封面图片
+              <label class="label-base">
+                排序
               </label>
-              <input
-                v-model="form.imageUrl"
-                type="text"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="请输入图片URL"
-              />
+              <input v-model="form.orderNum" type="number" class="input-base" placeholder="排序号" />
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">
+            <label class="label-base">
               项目描述
             </label>
-            <textarea
-              v-model="form.description"
-              rows="3"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="请输入项目描述"
-            ></textarea>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                演示链接
-              </label>
-              <input
-                v-model="form.demoUrl"
-                type="url"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="https://example.com"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
-                GitHub 链接
-              </label>
-              <input
-                v-model="form.githubUrl"
-                type="url"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="https://github.com/username/repo"
-              />
-            </div>
+            <textarea v-model="form.description" rows="3" class="textarea-base" placeholder="请输入项目描述"></textarea>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-              技术栈
+            <label class="label-base">
+              项目内容
             </label>
-            <input
-              v-model="techInput"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="请输入技术栈，用逗号分隔"
-            />
+            <textarea v-model="form.content" rows="5" class="textarea-base" placeholder="请输入项目详细内容"></textarea>
+          </div>
+
+          <div class="grid-2-cols">
+            <div>
+              <label class="label-base">
+                项目链接
+              </label>
+              <input v-model="form.link" type="url" class="input-base" placeholder="https://example.com" />
+            </div>
+            <div>
+              <label class="label-base">
+                封面图片
+              </label>
+              <input v-model="form.coverImage" type="text" class="input-base" placeholder="封面图片路径" />
+            </div>
+          </div>
+
+          <!-- 标签选择 -->
+          <div>
+            <label class="label-base">
+              技术标签
+            </label>
+            <div class="relative">
+              <button
+                type="button"
+                @click="toggleTagDropdown"
+                class="input-base text-left flex justify-between items-center"
+              >
+                <span>{{ selectedTags.length > 0 ? `已选择 ${selectedTags.length} 个标签` : '选择技术标签' }}</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              
+              <div v-if="showTagDropdown" class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto">
+                <div v-for="tag in tags" :key="tag.id" @click="toggleTag(tag)" class="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-50">
+                  <div class="flex items-center">
+                    <input type="checkbox" :checked="selectedTags.some(t => t.id === tag.id)" class="mr-2" />
+                    <span class="font-normal block truncate">{{ tag.name }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 显示已选择的标签 -->
+            <div v-if="selectedTags.length > 0" class="mt-2">
+              <div class="text-sm text-gray-600 mb-1">已选择的标签：</div>
+              <div class="flex flex-wrap gap-2">
+                <span v-for="tag in selectedTags" :key="tag.id" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-800">
+                  {{ tag.name }}
+                  <button type="button" @click="removeTag(tag)" class="ml-1 text-indigo-600 hover:text-indigo-800">
+                    ×
+                  </button>
+                </span>
+              </div>
+            </div>
           </div>
 
           <!-- 按钮 -->
@@ -118,8 +125,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { createProject, updateProject } from '@/api/project'
+import { getTags } from '@/api/tag'
 
 const props = defineProps({
   project: {
@@ -135,30 +143,92 @@ const props = defineProps({
 const emit = defineEmits(['close', 'save'])
 
 const loading = ref(false)
+const tags = ref([])
+const selectedTags = ref([])
+const showTagDropdown = ref(false)
 
 const form = ref({
-  name: '',
+  title: '',
   description: '',
-  imageUrl: '',
-  demoUrl: '',
-  githubUrl: '',
-  technologies: []
+  content: '',
+  coverImage: '',
+  link: '',
+  orderNum: 0,
+  tagIds: []
 })
 
-const techInput = ref('')
+// 切换标签下拉框显示状态
+const toggleTagDropdown = () => {
+  showTagDropdown.value = !showTagDropdown.value
+}
 
-// 监听技术栈输入变化
-watch(techInput, (newValue) => {
-  form.value.technologies = newValue.split(',').map(tech => tech.trim()).filter(tech => tech)
-})
+// 移除标签
+const removeTag = (tagToRemove) => {
+  selectedTags.value = selectedTags.value.filter(tag => tag.id !== tagToRemove.id)
+  form.value.tagIds = selectedTags.value.map(t => t.id)
+}
+
+// 切换标签选择状态
+const toggleTag = (tag) => {
+  const existingIndex = selectedTags.value.findIndex(t => t.id === tag.id)
+  if (existingIndex > -1) {
+    selectedTags.value.splice(existingIndex, 1)
+  } else {
+    selectedTags.value.push(tag)
+  }
+  form.value.tagIds = selectedTags.value.map(t => t.id)
+}
+
+// 点击外部关闭下拉框
+const handleClickOutside = (event) => {
+  if (!event.target.closest('.relative')) {
+    showTagDropdown.value = false
+  }
+}
 
 // 初始化表单数据
-if (props.project) {
-  form.value = {
-    ...props.project,
-    technologies: props.project.technologies || []
+const initializeForm = async () => {
+  if (props.project) {
+    form.value = {
+      title: props.project.title || '',
+      description: props.project.description || '',
+      content: props.project.content || '',
+      coverImage: props.project.coverImage || '',
+      link: props.project.link || '',
+      orderNum: props.project.orderNum || 0,
+      tagIds: props.project.tagIds || []
+    }
+
+    // 设置选中的标签
+    if (props.project.tags && props.project.tags.length > 0) {
+      selectedTags.value = props.project.tags
+      form.value.tagIds = props.project.tags.map(tag => tag.id)
+    } else if (props.project.tagIds && props.project.tagIds.length > 0 && tags.value.length > 0) {
+      selectedTags.value = tags.value.filter(tag => props.project.tagIds.includes(tag.id))
+      form.value.tagIds = props.project.tagIds
+    }
   }
-  techInput.value = form.value.technologies.join(', ')
+}
+
+// 加载标签数据
+const loadTags = async () => {
+  try {
+    const response = await getTags()
+    tags.value = response.data || []
+  } catch (error) {
+    console.error('加载标签失败:', error)
+    // 如果API请求失败，使用默认数据
+    tags.value = [
+      { id: 1, name: 'Vue' },
+      { id: 2, name: 'React' },
+      { id: 3, name: 'JavaScript' },
+      { id: 4, name: 'TypeScript' },
+      { id: 5, name: 'Node.js' },
+      { id: 6, name: 'Spring Boot' },
+      { id: 7, name: 'MySQL' },
+      { id: 8, name: 'Redis' }
+    ]
+  }
 }
 
 const handleSubmit = async () => {
@@ -172,8 +242,21 @@ const handleSubmit = async () => {
     emit('save')
   } catch (error) {
     console.error('保存项目失败:', error)
+    alert('保存失败，请重试')
   } finally {
     loading.value = false
   }
 }
+
+// 组件挂载时初始化
+onMounted(async () => {
+  document.addEventListener('click', handleClickOutside)
+  await loadTags()
+  await initializeForm()
+})
+
+// 组件卸载时清理事件监听器
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>

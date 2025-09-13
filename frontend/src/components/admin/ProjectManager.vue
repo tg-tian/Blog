@@ -2,89 +2,102 @@
   <div class="p-6">
     <!-- 头部操作区 -->
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-lg font-medium text-gray-900">项目管理</h2>
+      <h2 class="heading-lg">项目管理</h2>
       <button
         @click="showCreateModal = true"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+        class="btn-primary"
       >
         新建项目
       </button>
     </div>
 
     <!-- 项目列表 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div
-        v-for="project in projects"
-        :key="project.id"
-        class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-      >
-        <div class="p-6">
-          <div class="flex justify-between items-start mb-4">
-            <h3 class="text-lg font-medium text-gray-900">{{ project.name }}</h3>
-            <div class="flex space-x-2">
+    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+      <table class="table-base">
+        <thead class="table-header">
+          <tr>
+            <th class="table-header-cell">
+              标题
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              描述
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              技术栈
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              创建时间
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              操作
+            </th>
+          </tr>
+        </thead>
+        <tbody class="table-body">
+          <tr v-for="project in projects" :key="project.id">
+            <td class="table-cell">
+              <div class="text-sm font-medium text-gray-900">{{ project.title }}</div>
+            </td>
+            <td class="table-cell">
+              <div class="text-sm text-gray-900 max-w-xs truncate">{{ project.description }}</div>
+            </td>
+            <td class="table-cell">
+              <div class="flex flex-wrap gap-1">
+                <span
+                  v-for="tag in project.tags?.slice(0, 3)"
+                  :key="tag.id"
+                  class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
+                >
+                  {{ tag.name }}
+                </span>
+                <span v-if="project.tags?.length > 3" class="text-xs text-gray-500">
+                  +{{ project.tags.length - 3 }}
+                </span>
+              </div>
+            </td>
+            <td class="table-cell">
+              {{ formatDate(project.createTime) }}
+            </td>
+            <td class="table-cell">
               <button
                 @click="editProject(project)"
-                class="text-indigo-600 hover:text-indigo-900"
+                class="btn-text mr-4"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
+                编辑
               </button>
               <button
                 @click="deleteProject(project.id)"
-                class="text-red-600 hover:text-red-900"
+                class="btn-text-danger"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
+                删除
               </button>
-            </div>
-          </div>
-          
-          <p class="text-gray-600 text-sm mb-4">{{ project.description }}</p>
-          
-          <div class="flex flex-wrap gap-2 mb-4">
-            <span
-              v-for="tech in project.technologies"
-              :key="tech"
-              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-            >
-              {{ tech }}
-            </span>
-          </div>
-          
-          <div class="flex justify-between items-center text-sm text-gray-500">
-            <span>{{ formatDate(project.createdAt) }}</span>
-            <div class="flex space-x-2">
-              <a
-                v-if="project.demoUrl"
-                :href="project.demoUrl"
-                target="_blank"
-                class="text-indigo-600 hover:text-indigo-900"
-              >
-                演示
-              </a>
-              <a
-                v-if="project.githubUrl"
-                :href="project.githubUrl"
-                target="_blank"
-                class="text-indigo-600 hover:text-indigo-900"
-              >
-                代码
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <!-- 空状态 -->
-    <div v-if="projects.length === 0" class="text-center py-12">
-      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900">暂无项目</h3>
-      <p class="mt-1 text-sm text-gray-500">开始创建你的第一个项目吧</p>
+    <!-- 分页 -->
+    <div class="mt-6 flex justify-between items-center">
+      <div class="text-sm text-gray-700">
+        共 {{ total }} 条记录
+      </div>
+      <div class="flex space-x-2">
+        <button
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="btn-pagination"
+        >
+          上一页
+        </button>
+        <button
+          @click="nextPage"
+          :disabled="currentPage * pageSize >= total"
+          class="btn-pagination"
+        >
+          下一页
+        </button>
+      </div>
     </div>
 
     <!-- 创建/编辑模态框 -->
@@ -101,17 +114,23 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getProjects, deleteProject as deleteProjectApi } from '@/api/project'
+import { formatDateForDisplay } from '@/utils/dateUtils'
 import ProjectModal from './ProjectModal.vue'
 
 const projects = ref([])
+const total = ref(0)
+const currentPage = ref(1)
+const pageSize = ref(10)
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const editingProject = ref(null)
 
 const loadProjects = async () => {
   try {
-    const response = await getProjects()
-    projects.value = response.data || response
+    const response = await getProjects(currentPage.value, pageSize.value)
+    console.log('加载项目:', response)
+    projects.value = response.data?.list || response.data || response
+    total.value = response.data?.total || projects.value.length
   } catch (error) {
     console.error('加载项目失败:', error)
   }
@@ -144,9 +163,22 @@ const handleSave = async () => {
   closeModal()
 }
 
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('zh-CN')
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--
+    loadProjects()
+  }
 }
+
+const nextPage = () => {
+  if (currentPage.value * pageSize.value < total.value) {
+    currentPage.value++
+    loadProjects()
+  }
+}
+
+// 使用通用的日期格式化函数
+const formatDate = formatDateForDisplay
 
 onMounted(() => {
   loadProjects()
