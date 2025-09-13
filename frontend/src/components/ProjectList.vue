@@ -9,52 +9,99 @@
                 项目列表
             </h2>
         </div>
-        <div class="grid-responsive">
-        <div v-for="(project, index) in projects" :key="index" 
-             class="card-base card-content flex flex-col card-hover cursor-pointer"
-             @click="openProject(project.link)">
-            <!-- 项目名称 -->
-            <h3 class="heading-md mb-3">{{ project.name }}</h3>
-            
-            <!-- 项目简介 -->
-            <p class="text-description mb-4 flex-grow">{{ project.description }}</p>
-            
-            <!-- 技术栈 -->
-            <div class="mb-4">
-                <h4 class="text-sm font-semibold text-gray-700 mb-2">技术栈：</h4>
-                <div class="flex flex-wrap gap-2">
-                    <span v-for="tech in project.technologies" :key="tech" 
-                          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {{ tech }}
-                    </span>
+        
+        <!-- 加载状态 -->
+        <StatusMessage 
+            v-if="loading" 
+            type="loading" 
+            message="加载项目列表中..." 
+        />
+        
+        <!-- 错误状态 -->
+        <StatusMessage 
+            v-else-if="error" 
+            type="error" 
+            :message="error" 
+            :show-retry="true" 
+            @retry="loadProjects" 
+        />
+        
+        <!-- 项目列表 -->
+        <div v-else class="grid-responsive">
+            <div v-for="(project, index) in projects" :key="project.id || index" 
+                 class="card-base card-content flex flex-col card-hover cursor-pointer"
+                 @click="openProject(project.link)">
+                <!-- 项目名称 -->
+                <h3 class="heading-md mb-3">{{ project.name }}</h3>
+                
+                <!-- 项目简介 -->
+                <p class="text-description mb-4 flex-grow">{{ project.description }}</p>
+                
+                <!-- 技术栈 -->
+                <div class="mb-4" v-if="project.technologies && project.technologies.length > 0">
+                    <h4 class="text-sm font-semibold text-gray-700 mb-2">技术栈：</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <span v-for="tech in project.technologies" :key="tech" 
+                              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {{ tech }}
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
     </div>
 </template>
 
 <script setup>
-const projects = [
-    {
-        name: '博客系统',
-        description: '一个基于Vue3和Spring Boot的个人博客系统，支持文章发布、评论、标签分类等功能。',
-        technologies: ['Vue 3', 'Spring Boot', 'MySQL', 'Redis', 'MinIO', 'Tailwind CSS'],
-        link: 'https://example.com/blog'
-    },
-    {
-        name: '任务管理平台',
-        description: '支持团队协作与任务跟踪的Web应用，提供项目管理、进度跟踪、团队沟通等功能。',
-        technologies: ['React', 'Node.js', 'MongoDB', 'Socket.io', 'Ant Design'],
-        link: 'https://example.com/task'
-    },
-    {
-        name: '数据可视化系统',
-        description: '实时展示业务指标的仪表盘，支持多种图表类型和数据源接入。',
-        technologies: ['Vue 3', 'ECharts', 'TypeScript', 'Express', 'PostgreSQL'],
-        link: 'https://example.com/dashboard'
-    }
-]
+import { ref, onMounted } from 'vue'
+import { getProjects } from '@/api/project'
+import { getFileUrl } from '@/utils/upload'
+import StatusMessage from './StatusMessage.vue'
+
+const projects = ref([])
+const loading = ref(true)
+const error = ref('')
+
+// 加载项目列表
+const loadProjects = async () => {
+  try {
+    loading.value = true
+    error.value = ''
+    const response = await getProjects()
+    const projectsData = response.data || response
+    
+    // 处理项目数据，包括封面图片URL转换
+    projects.value = await Promise.all(
+      projectsData.map(async (project) => {
+        let coverImageUrl = ''
+        if (project.coverImage) {
+          try {
+            coverImageUrl = await getFileUrl(project.coverImage)
+          } catch (err) {
+            console.error('获取项目封面失败:', err)
+          }
+        }
+        
+        return {
+          id: project.id,
+          name: project.title, // 使用title作为name
+          description: project.description,
+          content: project.content,
+          coverImage: coverImageUrl,
+          link: project.link,
+          technologies: project.tags ? project.tags.map(tag => tag.name) : [], // 使用tags作为technologies
+          createTime: project.createTime,
+          updateTime: project.updateTime
+        }
+      })
+    )
+  } catch (err) {
+    console.error('加载项目列表失败:', err)
+    error.value = '加载项目列表失败，请稍后重试'
+  } finally {
+    loading.value = false
+  }
+}
 
 // 处理项目卡片点击事件
 const openProject = (link) => {
@@ -62,4 +109,9 @@ const openProject = (link) => {
         window.open(link, '_blank')
     }
 }
+
+// 组件挂载时加载数据
+onMounted(() => {
+  loadProjects()
+})
 </script>

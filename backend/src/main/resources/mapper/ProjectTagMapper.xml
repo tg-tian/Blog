@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tg.blog.backend.dao.ProjectTagMapper">
+    
+    <insert id="insertProjectTag">
+        INSERT INTO project_tag (project_id, tag_id)
+        VALUES (#{projectId}, #{tagId})
+    </insert>
+    
+    <insert id="batchInsertProjectTags">
+        INSERT INTO project_tag (project_id, tag_id)
+        VALUES
+        <foreach collection="tagIds" item="tagId" separator=",">
+            (#{projectId}, #{tagId})
+        </foreach>
+    </insert>
+    
+    <select id="selectTagIdsByProjectId" resultType="long">
+        SELECT tag_id FROM project_tag WHERE project_id = #{projectId}
+    </select>
+    
+    <select id="selectProjectIdsByTagId" resultType="long">
+        SELECT project_id FROM project_tag WHERE tag_id = #{tagId}
+    </select>
+    
+    <delete id="deleteByProjectId">
+        DELETE FROM project_tag WHERE project_id = #{projectId}
+    </delete>
+    
+    <delete id="deleteByTagId">
+        DELETE FROM project_tag WHERE tag_id = #{tagId}
+    </delete>
+    
+    <delete id="deleteProjectTag">
+        DELETE FROM project_tag WHERE project_id = #{projectId} AND tag_id = #{tagId}
+    </delete>
+    
+</mapper>
