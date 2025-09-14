@@ -8,6 +8,7 @@ jobs:
   # Docker镜像构建
   docker-build:
     runs-on: ubuntu-latest
+    environment: deploy
     
     steps:
     - name: Checkout code
@@ -50,7 +51,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [docker-build]
-    environment: production
+    environment: deploy
     
     steps:
     - name: Deploy to production
@@ -61,4 +62,4 @@ jobs:
         password: ${{ secrets.PROD_PASSWORD }}
         port: ${{ secrets.PROD_SSH_PORT }}
         script: |
-          wsl -d Ubuntu -e bash -c "cd /opt/blog && export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} && docker-compose pull && docker-compose up -d && docker system prune -f"
+          wsl -d Ubuntu -e bash -c "cd /home/tgapk/Blog && docker-compose pull && docker-compose up -d && docker system prune -f"
