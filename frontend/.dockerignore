@@ -81,12 +81,9 @@ temp
 
 # 文档和说明文件
 README.md
-*.md
+API_CONFIG.md
 
 # Docker 相关文件（避免递归复制）
 Dockerfile
 .dockerignore
 docker-compose*.yml
-
-# 其他配置文件
-nginx.conf
