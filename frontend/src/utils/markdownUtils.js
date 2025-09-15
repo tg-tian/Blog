@@ -24,10 +24,16 @@ const getObjectNameFromUrl = (url) => {
     }
 
     const parts = path.split('/').filter(Boolean);
-    // 移除 bucket 名称
-    if (parts.length > 1 && parts[0] === (import.meta.env.VITE_MINIO_BUCKET || 'blog')) {
+    
+    // 处理包含 /minio/blog/ 代理路径的URL
+    if (parts.length >= 3 && parts[0] === 'minio' && parts[1] === (import.meta.env.VITE_MINIO_BUCKET || 'blog')) {
+      return parts.slice(2).join('/');
+    }
+    // 处理直接的 /blog/ 路径
+    else if (parts.length > 1 && parts[0] === (import.meta.env.VITE_MINIO_BUCKET || 'blog')) {
       return parts.slice(1).join('/');
     }
+    // 其他情况直接返回完整路径
     return parts.join('/');
   } catch (e) {
     console.error('从URL解析objectName失败:', url, e);
@@ -50,6 +56,7 @@ export const extractImageObjectNames = (markdownText) => {
   }
   
   console.log('提取的 objectNames:', [...objectNames]);
+    console.log('原始 markdownText 中的图片URL:', markdownText.match(/!\[.*?\]\((.*?)\)/g));
   return [...objectNames];
 };
 
