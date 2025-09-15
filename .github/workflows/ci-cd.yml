@@ -115,5 +115,4 @@ jobs:
         command_timeout: 10m
         debug: true
         script: |
-          chmod +x /home/tgapk/Blog/scripts/deploy.sh
-          wsl -d Ubuntu -e /home/tgapk/Blog/scripts/deploy.sh
+          wsl -d Ubuntu -e bash -c "chmod +x /home/tgapk/Blog/scripts/deploy.sh && /home/tgapk/Blog/scripts/deploy.sh"
