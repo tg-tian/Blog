@@ -91,7 +91,12 @@ export const uploadToMinio = async (file, options = {}) => {
       return { success: false, objectName: null, error: '获取上传地址失败' }
     }
     
-    const { uploadUrl, objectName } = data
+    let { uploadUrl, objectName } = data
+    
+    // 将MinIO内网地址转换为nginx代理地址
+    if (uploadUrl.includes('http://minio:9002')) {
+      uploadUrl = uploadUrl.replace('http://minio:9002', 'http://localhost/minio')
+    }
     
     // 3. 使用XMLHttpRequest上传到MinIO
     return new Promise((resolve) => {
