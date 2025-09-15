@@ -65,12 +65,12 @@ jobs:
         command_timeout: 10m
         debug: true
         script: |
-          # 进入 WSL 并执行部署命令
           wsl -d Ubuntu -e bash -c "
             set -e
             cd /home/tgapk/Blog
+            git fetch origin main
+            git reset --hard origin/main
             docker compose pull
             docker compose up -d
             docker system prune -f
-            docker compose ps
           "
