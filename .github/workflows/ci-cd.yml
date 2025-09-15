@@ -115,12 +115,5 @@ jobs:
         command_timeout: 10m
         debug: true
         script: |
-          wsl -d Ubuntu -e bash -c "
-            set -ex
-            cd /home/tgapk/Blog
-            git fetch origin main
-            git reset --hard origin/main
-            docker compose pull
-            docker compose up -d
-            docker system prune -f
-          "
+          chmod +x /home/tgapk/Blog/scripts/deploy.sh
+          wsl -d Ubuntu -e /home/tgapk/Blog/scripts/deploy.sh

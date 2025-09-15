@@ -2,7 +2,7 @@ spring:
   application:
     name: backend
   datasource:
-    url: jdbc:mysql://localhost:3306/blog?useSSL=false
+    url: jdbc:mysql://mysql:3306/blog?useSSL=false
     username: root
     password: tg852963
     driver-class-name: com.mysql.cj.jdbc.Driver
