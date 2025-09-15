@@ -26,7 +26,7 @@ services:
     command: redis-server --appendonly yes --bind 0.0.0.0
 
   blog-frontend:
-    image: ${DOCKER_USERNAME}/blog-frontend:latest
+    image: tgapk/blog-frontend:latest
     container_name: blog-frontend
     restart: always
     ports:
@@ -47,7 +47,7 @@ services:
       - /home/tgapk/mysql_data:/var/lib/mysql
 
   blog-backend:
-    image: ${DOCKER_USERNAME}/blog-backend:latest
+    image: tgapk/blog-backend:latest
     container_name: blog-backend
     restart: always
     ports:
