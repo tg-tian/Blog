@@ -14,6 +14,12 @@ services:
     volumes:
       - /home/tgapk/minio_data:/data
     command: server /data --address ":9002" --console-address ":9003"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9002/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 60s
 
   redis:
     image: redis:7.2
@@ -24,6 +30,12 @@ services:
     volumes:
       - /home/tgapk/redis_data:/data
     command: redis-server --appendonly yes --bind 0.0.0.0
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   blog-frontend:
     image: tgapk/blog-frontend:latest
@@ -45,6 +57,12 @@ services:
       - "3306:3306"
     volumes:
       - /home/tgapk/mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ptg852963"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   blog-backend:
     image: tgapk/blog-backend:latest
@@ -57,7 +75,10 @@ services:
       SPRING_DATA_REDIS_HOST: "redis"
       MINIO_ENDPOINT: "http://minio:9002"
     depends_on:
-      - mysql
-      - redis
-      - minio
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
 
