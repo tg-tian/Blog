@@ -72,6 +72,8 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/blog?useSSL=false"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "tg852963"
       SPRING_DATA_REDIS_HOST: "redis"
       MINIO_ENDPOINT: "http://minio:9002"
     depends_on:

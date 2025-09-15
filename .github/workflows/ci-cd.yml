@@ -116,7 +116,7 @@ jobs:
         debug: true
         script: |
           wsl -d Ubuntu -e bash -c "
-            set -e
+            set -ex
             cd /home/tgapk/Blog
             git fetch origin main
             git reset --hard origin/main
@@ -124,7 +124,3 @@ jobs:
             docker compose up -d
             docker system prune -f
           "
-          if %errorlevel% neq 0 (
-            echo "::error::部署脚本在 WSL 中执行失败，退出代码: %errorlevel%"
-            exit %errorlevel%
-          )
