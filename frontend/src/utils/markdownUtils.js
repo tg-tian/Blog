@@ -10,27 +10,48 @@ import { getFileUrl } from './upload'
  * @param {string} markdownText - Markdown 文本
  * @returns {Array} objectName 数组
  */
+const getObjectNameFromUrl = (url) => {
+  try {
+    let path = url;
+    if (path.startsWith('http')) {
+      path = new URL(url).pathname;
+    }
+
+    // 移除查询参数
+    const queryIndex = path.indexOf('?');
+    if (queryIndex !== -1) {
+      path = path.substring(0, queryIndex);
+    }
+
+    const parts = path.split('/').filter(Boolean);
+    // 移除 bucket 名称
+    if (parts.length > 1 && parts[0] === (import.meta.env.VITE_MINIO_BUCKET || 'blog')) {
+      return parts.slice(1).join('/');
+    }
+    return parts.join('/');
+  } catch (e) {
+    console.error('从URL解析objectName失败:', url, e);
+    return null;
+  }
+};
+
 export const extractImageObjectNames = (markdownText) => {
-  if (!markdownText) return []
-  
-  // 匹配 Markdown 图片语法: ![alt](url)
-  const imageRegex = /!\[.*?\]\((.*?)\)/g
-  const objectNames = []
-  let match
-  
+  if (!markdownText) return [];
+
+  const imageRegex = /!\[.*?\]\((.*?)\)/g;
+  const objectNames = new Set();
+  let match;
+
   while ((match = imageRegex.exec(markdownText)) !== null) {
-    const imageUrl = match[1]
-    
-    // 提取 objectName（格式为 /prefix/name）
-    // 匹配 /prefix/name 格式的路径
-    const objectNameMatch = imageUrl.match(/(\/[^/?]+\/[^/?]+)(?:\?|$)/)
-    if (objectNameMatch && objectNameMatch[1]) {
-      objectNames.push(objectNameMatch[1])
+    const objectName = getObjectNameFromUrl(match[1]);
+    if (objectName) {
+      objectNames.add(objectName);
     }
   }
-  console.log('提取的 objectNames:', objectNames)
-  return [...new Set(objectNames)] // 去重
-}
+  
+  console.log('提取的 objectNames:', [...objectNames]);
+  return [...objectNames];
+};
 
 /**
  * 更新 Markdown 文本中的图片链接（仅更新URL，不包裹HTML）
@@ -39,22 +60,16 @@ export const extractImageObjectNames = (markdownText) => {
  * @returns {string} 更新后的 Markdown 文本
  */
 export const updateMarkdownImageUrlsOnly = (markdownText, urlMapping) => {
-  if (!markdownText || !urlMapping) return markdownText
-  
+  if (!markdownText || !urlMapping) return markdownText;
+
   return markdownText.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, oldUrl) => {
-    // 从旧 URL 中提取 objectName（格式为 /prefix/name）
-    const objectNameMatch = oldUrl.match(/(\/[^/?]+\/[^/?]+)(?:\?|$)/)
-    if (objectNameMatch && objectNameMatch[1]) {
-      const objectName = objectNameMatch[1]
-      const newUrl = urlMapping[objectName]
-      if (newUrl) {
-        // 只更新URL，保持Markdown格式
-        return `![${alt}](${newUrl})`
-      }
+    const objectName = getObjectNameFromUrl(oldUrl);
+    if (objectName && urlMapping[objectName]) {
+      return `![${alt}](${urlMapping[objectName]})`;
     }
-    return match // 如果没有找到对应的新 URL，保持原样
-  })
-}
+    return match;
+  });
+};
 
 /**
  * 更新 Markdown 文本中的图片链接（包裹HTML标签）
@@ -63,22 +78,17 @@ export const updateMarkdownImageUrlsOnly = (markdownText, urlMapping) => {
  * @returns {string} 更新后的 Markdown 文本
  */
 export const updateMarkdownImageUrls = (markdownText, urlMapping) => {
-  if (!markdownText || !urlMapping) return markdownText
-  
+  if (!markdownText || !urlMapping) return markdownText;
+
   return markdownText.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, oldUrl) => {
-    // 从旧 URL 中提取 objectName（格式为 /prefix/name）
-    const objectNameMatch = oldUrl.match(/(\/[^/?]+\/[^/?]+)(?:\?|$)/)
-    if (objectNameMatch && objectNameMatch[1]) {
-      const objectName = objectNameMatch[1]
-      const newUrl = urlMapping[objectName]
-      if (newUrl) {
-        // 将图片用HTML标签包裹，限制最大宽度并保持比例
-        return `<div style="text-align: center; margin: 1rem 0;"><img src="${newUrl}" alt="${alt}" style="max-width: 80%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);" /></div>`
-      }
+    const objectName = getObjectNameFromUrl(oldUrl);
+    if (objectName && urlMapping[objectName]) {
+      const newUrl = urlMapping[objectName];
+      return `<div style="text-align: center; margin: 1rem 0;"><img src="${newUrl}" alt="${alt}" style="max-width: 80%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);" /></div>`;
     }
-    return match // 如果没有找到对应的新 URL，保持原样
-  })
-}
+    return match;
+  });
+};
 
 /**
  * 刷新 Markdown 文本中的所有图片链接（仅更新URL，用于编辑）
