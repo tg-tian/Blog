@@ -74,4 +74,52 @@
     <select id="countTotalArticles" resultType="long">
         SELECT COUNT(*) FROM article WHERE deleted = 0
     </select>
+    
+    <select id="selectCategoryStats" resultType="com.tg.blog.backend.dto.CategoryStatsDTO">
+        SELECT 
+            c.id AS categoryId,
+            c.name AS categoryName,
+            c.slug AS categorySlug,
+            COUNT(a.id) AS articleCount
+        FROM category c
+         LEFT JOIN article a ON c.id = a.category_id AND a.deleted = 0
+         GROUP BY c.id, c.name, c.slug
+         HAVING articleCount > 0
+         ORDER BY articleCount DESC, c.name ASC
+    </select>
+    
+    <select id="selectTagStats" resultType="com.tg.blog.backend.dto.TagStatsDTO">
+        SELECT 
+            t.id AS tagId,
+            t.name AS tagName,
+            t.slug AS tagSlug,
+            t.description AS tagDescription,
+            t.color AS tagColor,
+            COUNT(a.id) AS articleCount
+        FROM tag t
+        LEFT JOIN article_tag at ON t.id = at.tag_id
+        LEFT JOIN article a ON at.article_id = a.id AND a.deleted = 0
+        GROUP BY t.id, t.name, t.slug, t.description, t.color
+        HAVING articleCount > 0
+        ORDER BY articleCount DESC, t.name ASC
+    </select>
+    
+    <select id="selectArticlesByCategory" resultType="com.tg.blog.backend.entity.Article" parameterType="long">
+        SELECT id, title, summary, content, cover_url AS coverUrl, category_id AS categoryId, 
+               publish_time AS publishTime, update_time AS updateTime, 
+               views, likes, comments, deleted
+        FROM article 
+        WHERE category_id = #{categoryId} AND deleted = 0
+        ORDER BY publish_time DESC
+    </select>
+    
+    <select id="selectArticlesByTag" resultType="com.tg.blog.backend.entity.Article" parameterType="long">
+        SELECT a.id, a.title, a.summary, a.content, a.cover_url AS coverUrl, a.category_id AS categoryId, 
+               a.publish_time AS publishTime, a.update_time AS updateTime, 
+               a.views, a.likes, a.comments, a.deleted
+        FROM article a
+        INNER JOIN article_tag at ON a.id = at.article_id
+        WHERE at.tag_id = #{tagId} AND a.deleted = 0
+        ORDER BY a.publish_time DESC
+    </select>
 </mapper>

@@ -51,4 +51,28 @@
         SELECT COUNT(*) FROM project
     </select>
     
+    <select id="selectProjectTagStats" resultType="com.tg.blog.backend.dto.TagStatsDTO">
+        SELECT 
+            t.id AS tagId,
+            t.name AS tagName,
+            t.slug AS tagSlug,
+            t.description AS tagDescription,
+            t.color AS tagColor,
+            COUNT(p.id) AS articleCount
+        FROM tag t
+        LEFT JOIN project_tag pt ON t.id = pt.tag_id
+        LEFT JOIN project p ON pt.project_id = p.id
+        GROUP BY t.id, t.name, t.slug, t.description, t.color
+        ORDER BY articleCount DESC, t.name ASC
+    </select>
+    
+    <select id="selectProjectsByTag" resultType="com.tg.blog.backend.entity.Project" parameterType="long">
+        SELECT p.id, p.title, p.description, p.content, p.cover_image AS coverImage, p.link, 
+               p.order_num AS orderNum, p.create_time AS createTime, p.update_time AS updateTime
+        FROM project p
+        INNER JOIN project_tag pt ON p.id = pt.project_id
+        WHERE pt.tag_id = #{tagId}
+        ORDER BY p.order_num ASC, p.create_time DESC
+    </select>
+    
 </mapper>

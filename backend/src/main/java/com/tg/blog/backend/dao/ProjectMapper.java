@@ -1,5 +1,6 @@
 package com.tg.blog.backend.dao;
 
+import com.tg.blog.backend.dto.TagStatsDTO;
 import com.tg.blog.backend.entity.Project;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -21,4 +22,8 @@ public interface ProjectMapper {
     int deleteProject(Long id);
     
     Long countTotalProjects();
+    
+    List<TagStatsDTO> selectProjectTagStats();
+    
+    List<Project> selectProjectsByTag(Long tagId);
 }

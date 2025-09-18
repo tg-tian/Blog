@@ -2,6 +2,8 @@ package com.tg.blog.backend.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.tg.blog.backend.dto.ArticleDTO;
+import com.tg.blog.backend.dto.CategoryStatsDTO;
+import com.tg.blog.backend.dto.TagStatsDTO;
 import com.tg.blog.backend.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.tg.blog.backend.common.ResponseEntity;
@@ -76,5 +78,47 @@ public class ArticleController {
         Integer count = request.get("count");
         articleService.updateCommentCount(id, count);
         return ResponseEntity.success("Comment count updated successfully");
+    }
+    
+    /**
+     * 获取所有分类及其文章数量统计
+     */
+    @GetMapping("/categories/stats")
+    public ResponseEntity<List<CategoryStatsDTO>> getCategoryStats() {
+        List<CategoryStatsDTO> categoryStats = articleService.getCategoryStats();
+        return ResponseEntity.success(categoryStats);
+    }
+    
+    /**
+     * 获取所有标签及其文章数量统计
+     */
+    @GetMapping("/tags/stats")
+    public ResponseEntity<List<TagStatsDTO>> getTagStats() {
+        List<TagStatsDTO> tagStats = articleService.getTagStats();
+        return ResponseEntity.success(tagStats);
+    }
+    
+    /**
+     * 根据分类ID获取文章列表
+     */
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<PageInfo<ArticleDTO>> getArticlesByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PageInfo<ArticleDTO> articles = articleService.getArticlesByCategory(categoryId, page, size);
+        return ResponseEntity.success(articles);
+    }
+    
+    /**
+     * 根据标签ID获取文章列表
+     */
+    @GetMapping("/tag/{tagId}")
+    public ResponseEntity<PageInfo<ArticleDTO>> getArticlesByTag(
+            @PathVariable Long tagId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PageInfo<ArticleDTO> articles = articleService.getArticlesByTag(tagId, page, size);
+        return ResponseEntity.success(articles);
     }
 }

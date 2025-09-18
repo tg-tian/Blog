@@ -1,5 +1,7 @@
 package com.tg.blog.backend.dao;
 
+import com.tg.blog.backend.dto.CategoryStatsDTO;
+import com.tg.blog.backend.dto.TagStatsDTO;
 import com.tg.blog.backend.entity.Article;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -26,4 +28,12 @@ public interface ArticleMapper {
     void updateCommentCount(Long id, Integer count);
     
     Long countTotalArticles();
+    
+    List<CategoryStatsDTO> selectCategoryStats();
+    
+    List<TagStatsDTO> selectTagStats();
+    
+    List<Article> selectArticlesByCategory(Long categoryId);
+    
+    List<Article> selectArticlesByTag(Long tagId);
 }

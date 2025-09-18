@@ -3,6 +3,7 @@ package com.tg.blog.backend.controller;
 import com.github.pagehelper.PageInfo;
 import com.tg.blog.backend.common.ResponseEntity;
 import com.tg.blog.backend.dto.ProjectDTO;
+import com.tg.blog.backend.dto.TagStatsDTO;
 import com.tg.blog.backend.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -90,5 +91,26 @@ public class ProjectController {
     public ResponseEntity<Long> getTotalProjectCount() {
         Long count = projectService.getTotalProjectCount();
         return ResponseEntity.success(count);
+    }
+    
+    /**
+     * 获取所有标签及其项目数量统计
+     */
+    @GetMapping("/tags/stats")
+    public ResponseEntity<List<TagStatsDTO>> getProjectTagStats() {
+        List<TagStatsDTO> tagStats = projectService.getProjectTagStats();
+        return ResponseEntity.success(tagStats);
+    }
+    
+    /**
+     * 根据标签ID获取项目列表
+     */
+    @GetMapping("/tag/{tagId}")
+    public ResponseEntity<PageInfo<ProjectDTO>> getProjectsByTag(
+            @PathVariable Long tagId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PageInfo<ProjectDTO> projects = projectService.getProjectsByTag(tagId, page, size);
+        return ResponseEntity.success(projects);
     }
 }

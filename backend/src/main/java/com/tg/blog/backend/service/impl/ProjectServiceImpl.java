@@ -7,6 +7,7 @@ import com.tg.blog.backend.dao.ProjectMapper;
 import com.tg.blog.backend.dao.ProjectTagMapper;
 import com.tg.blog.backend.dao.TagMapper;
 import com.tg.blog.backend.dto.ProjectDTO;
+import com.tg.blog.backend.dto.TagStatsDTO;
 import com.tg.blog.backend.entity.Project;
 import com.tg.blog.backend.entity.Tag;
 import com.tg.blog.backend.mapper.ProjectConverter;
@@ -134,6 +135,19 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Long getTotalProjectCount() {
         return projectMapper.countTotalProjects();
+    }
+    
+    @Override
+    public List<TagStatsDTO> getProjectTagStats() {
+        return projectMapper.selectProjectTagStats();
+    }
+    
+    @Override
+    public PageInfo<ProjectDTO> getProjectsByTag(Long tagId, int page, int size) {
+        PageHelper.startPage(page, size);
+        List<Project> projects = projectMapper.selectProjectsByTag(tagId);
+        List<ProjectDTO> result = convertProjectsWithTags(projects);
+        return new PageInfo<>(result);
     }
     
     private List<ProjectDTO> convertProjectsWithTags(List<Project> projects) {

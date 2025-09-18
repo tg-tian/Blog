@@ -8,6 +8,8 @@ import com.tg.blog.backend.dao.ArticleTagMapper;
 import com.tg.blog.backend.dao.CategoryMapper;
 import com.tg.blog.backend.dao.TagMapper;
 import com.tg.blog.backend.dto.ArticleDTO;
+import com.tg.blog.backend.dto.CategoryStatsDTO;
+import com.tg.blog.backend.dto.TagStatsDTO;
 import com.tg.blog.backend.entity.Article;
 import com.tg.blog.backend.entity.Category;
 import com.tg.blog.backend.entity.Tag;
@@ -152,5 +154,52 @@ public class ArticleServiceImpl implements ArticleService {
         articleMapper.updateCommentCount(id,count);
     }
     
+    @Override
+    public List<CategoryStatsDTO> getCategoryStats() {
+        return articleMapper.selectCategoryStats();
+    }
+    
+    @Override
+    public List<TagStatsDTO> getTagStats() {
+        return articleMapper.selectTagStats();
+    }
+    
+    @Override
+    public PageInfo<ArticleDTO> getArticlesByCategory(Long categoryId, int page, int size) {
+        PageHelper.startPage(page, size);
+        List<Article> articles = articleMapper.selectArticlesByCategory(categoryId);
+        List<ArticleDTO> result = new ArrayList<>();
+        for (Article article : articles) {
+            ArticleDTO dto = articleConverter.toDTO(article);
+            Category category = categoryMapper.selectById(article.getCategoryId());
+            dto.setCategory(categoryConverter.toDTO(category));
+            List<Long> tagIds = articleTagMapper.selectByArticleId(article.getId());
+            if(tagIds!=null && !tagIds.isEmpty()){
+                List<Tag> tags = tagMapper.selectByIds(tagIds);
+                dto.setTags(tagConverter.toDTOList(tags));
+            }
+            result.add(dto);
+        }
+        return new PageInfo<>(result);
+    }
+    
+    @Override
+    public PageInfo<ArticleDTO> getArticlesByTag(Long tagId, int page, int size) {
+        PageHelper.startPage(page, size);
+        List<Article> articles = articleMapper.selectArticlesByTag(tagId);
+        List<ArticleDTO> result = new ArrayList<>();
+        for (Article article : articles) {
+            ArticleDTO dto = articleConverter.toDTO(article);
+            Category category = categoryMapper.selectById(article.getCategoryId());
+            dto.setCategory(categoryConverter.toDTO(category));
+            List<Long> tagIds = articleTagMapper.selectByArticleId(article.getId());
+            if(tagIds!=null && !tagIds.isEmpty()){
+                List<Tag> tags = tagMapper.selectByIds(tagIds);
+                dto.setTags(tagConverter.toDTOList(tags));
+            }
+            result.add(dto);
+        }
+        return new PageInfo<>(result);
+    }
     
 }
