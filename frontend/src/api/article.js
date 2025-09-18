@@ -23,3 +23,9 @@ export const incrementViews = (id) => request.post(`/article/${id}/view`)
 
 // 更新文章评论数
 export const updateCommentCount = (id, count) => request.put(`/article/${id}/comments`, { count })
+
+// 根据分类ID获取文章列表
+export const getArticlesByCategory = (categoryId, page, size) => request.get(`/article/category/${categoryId}?page=${page}&size=${size}`)
+
+// 根据标签ID获取文章列表
+export const getArticlesByTag = (tagId, page, size) => request.get(`/article/tag/${tagId}?page=${page}&size=${size}`)

@@ -29,13 +29,6 @@ export const incrementProjectViews = (id) => request.post(`/project/${id}/view`)
 // 获取热门项目
 export const getPopularProjects = (limit = 5) => request.get(`/project/popular?limit=${limit}`)
 
-// 根据标签获取项目
-export const getProjectsByTag = (tagId, page, size) => {
-    if (page && size) {
-        return request.get(`/project/tag/${tagId}?page=${page}&size=${size}`)
-    }
-    return request.get(`/project/tag/${tagId}`)
-}
 
 // 搜索项目
 export const searchProjects = (keyword, page, size) => {
@@ -44,3 +37,9 @@ export const searchProjects = (keyword, page, size) => {
     }
     return request.get(`/project/search?keyword=${keyword}`)
 }
+
+// 获取项目标签统计信息（包含项目数量）
+export const getProjectTagStats = () => request.get('/project/tags/stats')
+
+// 根据标签ID获取项目列表
+export const getProjectsByTag = (tagId, page, size) => request.get(`/project/tag/${tagId}?page=${page}&size=${size}`)

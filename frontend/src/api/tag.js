@@ -14,3 +14,6 @@ export const updateTag = (id, data) => request.put(`/tag/${id}`, data)
 
 // 删除标签
 export const deleteTag = (id) => request.delete(`/tag/${id}`)
+
+// 获取标签统计信息（包含文章数量）
+export const getTagStats = () => request.get('/article/tags/stats')

@@ -49,7 +49,7 @@
                     />
                     <div v-else class="m-4 space-y-4">
                         <ArticleList :articles="articles" />
-                        <ProjectList />
+                        <ProjectList :projects="projects" />
                     </div>
                     <Footer class="text-gray-400 text-center py-6" />
                 </main>
@@ -67,9 +67,11 @@ import SideBar from '@/layouts/SideBar.vue'
 import Footer from '@/layouts/Footer.vue'
 import StatusMessage from '@/components/StatusMessage.vue'
 import { getArticles } from '@/api/article'
+import { getProjects } from '@/api/project'
 
 const loading = ref(true)
 const articles = ref([])
+const projects = ref([])
 const page = ref(1)
 const size = ref(10)
 const navOpacity = ref(0)
@@ -77,12 +79,31 @@ const navOpacity = ref(0)
 // 加载文章列表
 const loadArticles = async () => {
     try {
-        loading.value = true
-        const response = await getArticles(page.value,size.value)
+        const response = await getArticles(page.value, size.value)
         articles.value = response.data.list || []
     } catch (error) {
         console.error('加载文章列表失败:', error)
         articles.value = []
+    }
+}
+
+// 加载项目列表
+const loadProjects = async () => {
+    try {
+        const response = await getProjects(1, 6) // 首页只显示6个项目
+        const projectsData = response.data || response
+        projects.value = projectsData.list || projectsData || []
+    } catch (error) {
+        console.error('加载项目列表失败:', error)
+        projects.value = []
+    }
+}
+
+// 加载所有数据
+const loadData = async () => {
+    try {
+        loading.value = true
+        await Promise.all([loadArticles(), loadProjects()])
     } finally {
         loading.value = false
     }
@@ -126,7 +147,7 @@ const scrollToContent = () => {
 }
 
 onMounted(() => {
-    loadArticles()
+    loadData()
     // 添加滚动事件监听
     window.addEventListener('scroll', handleScroll)
     // 初始化导航栏状态

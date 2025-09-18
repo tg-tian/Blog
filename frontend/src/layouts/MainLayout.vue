@@ -5,12 +5,13 @@
             <aside class="fixed top-12 left-0 w-1/5 h-[calc(100vh-4rem)] ">
                 <SideBar />
             </aside>
-            <main class="flex-1 ml-[20%] mt-12 mr-10">
-                <router-view />
+            <main class="flex flex-col flex-1 ml-[20%] mt-12 mr-10">
+                <div class="flex-1">
+                    <router-view />
+                </div>
                 <Footer class="text-gray-400 text-center py-6" />
             </main>
         </div>
-
     </div>
 </template>
 

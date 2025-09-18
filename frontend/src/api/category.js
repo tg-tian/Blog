@@ -14,3 +14,6 @@ export const updateCategory = (id, data) => request.put(`/category/${id}`, data)
 
 // 删除分类
 export const deleteCategory = (id) => request.delete(`/category/${id}`)
+
+// 获取分类统计信息（包含文章数量）
+export const getCategoryStats = () => request.get('/article/categories/stats')
