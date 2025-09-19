@@ -16,6 +16,7 @@ COPY frontend/vite.config.js ./
 COPY frontend/tailwind.config.js ./
 COPY frontend/postcss.config.js ./
 COPY frontend/index.html ./
+COPY frontend/.env.production ./.env.production
 
 # 5. 复制源代码和公共资源
 # 源代码变动最频繁，放在后面，这样代码变更不会导致前面的层缓存失效
