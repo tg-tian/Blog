@@ -95,7 +95,8 @@ export const uploadToMinio = async (file, options = {}) => {
     
     // 将MinIO内网地址转换为nginx代理地址
     if (uploadUrl.includes('http://minio:9002')) {
-      uploadUrl = uploadUrl.replace('http://minio:9002', 'http://localhost/minio')
+      const minioHost = import.meta.env.VITE_MINIO_HOST || 'localhost'
+      uploadUrl = uploadUrl.replace('http://minio:9002', `http://${minioHost}/minio`)
     }
     
     // 3. 使用XMLHttpRequest上传到MinIO
@@ -183,9 +184,10 @@ export const getFileUrl = async (objectName) => {
     if (data.presignedUrl) {
       // 将MinIO内部地址转换为nginx代理地址
       let processedUrl = data.presignedUrl
-      // 替换 http://minio:9002 为 localhost/minio
+      // 替换 http://minio:9002 为 环境配置的主机地址/minio
       if (processedUrl.includes('http://minio:9002')) {
-        processedUrl = processedUrl.replace('http://minio:9002', 'http://localhost/minio')
+        const minioHost = import.meta.env.VITE_MINIO_HOST || 'localhost'
+        processedUrl = processedUrl.replace('http://minio:9002', `http://${minioHost}/minio`)
       }
       
       return processedUrl
@@ -193,7 +195,8 @@ export const getFileUrl = async (objectName) => {
   } catch (error) {
     console.warn('获取预签名URL失败，使用直接URL:', error)
     // 回退到直接拼接URL
-    const minioBaseUrl = import.meta.env.VITE_MINIO_BASE_URL || 'http://localhost:9003'
+    const minioHost = import.meta.env.VITE_MINIO_HOST || 'localhost'
+    const minioBaseUrl = import.meta.env.VITE_MINIO_BASE_URL || `http://${minioHost}/minio`
     const bucketName = import.meta.env.VITE_MINIO_BUCKET || 'blog'
     return `${minioBaseUrl}/${bucketName}/${objectName}`
   }
