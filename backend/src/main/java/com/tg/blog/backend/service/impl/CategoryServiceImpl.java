@@ -9,6 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+/**
+ * 分类服务实现类
+ * 实现分类相关的业务逻辑
+ * 
+ * @author TG
+ * @since 1.0.0
+ */
 @Service
 public class CategoryServiceImpl implements CategoryService {
     @Autowired

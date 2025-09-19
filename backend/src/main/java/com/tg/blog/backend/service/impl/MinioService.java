@@ -9,6 +9,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+/**
+ * MinIO文件服务实现类
+ * 基于MinIO对象存储实现文件上传、下载等功能
+ * 
+ * @author TG
+ * @since 1.0.0
+ */
 @Service
 public class MinioService implements FileService {
     private static final String COVER_PREFIX = "cover/";

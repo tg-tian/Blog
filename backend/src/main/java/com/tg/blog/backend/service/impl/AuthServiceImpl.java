@@ -6,6 +6,13 @@ import com.tg.blog.backend.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * 认证服务实现类
+ * 实现用户认证相关的业务逻辑
+ * 
+ * @author TG
+ * @since 1.0.0
+ */
 @Service
 public class AuthServiceImpl implements AuthService {
     

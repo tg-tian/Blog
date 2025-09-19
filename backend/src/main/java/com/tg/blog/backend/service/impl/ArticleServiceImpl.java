@@ -25,6 +25,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 文章服务实现类
+ * 实现文章相关的业务逻辑，包括CRUD操作、标签关联管理和统计功能
+ * 
+ * @author TG
+ * @since 1.0.0
+ */
 @Service
 public class ArticleServiceImpl implements ArticleService {
 

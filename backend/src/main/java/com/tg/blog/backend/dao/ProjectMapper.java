@@ -6,6 +6,13 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+/**
+ * 项目数据访问接口
+ * 提供项目相关的数据库操作方法
+ * 
+ * @author TG
+ * @since 1.0.0
+ */
 @Mapper
 public interface ProjectMapper {
     

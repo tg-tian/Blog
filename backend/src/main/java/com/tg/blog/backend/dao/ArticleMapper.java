@@ -7,6 +7,13 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+/**
+ * 文章数据访问接口
+ * 提供文章相关的数据库操作方法
+ * 
+ * @author TG
+ * @since 1.0.0
+ */
 @Mapper
 public interface ArticleMapper {
     int insertArticle(Article article);

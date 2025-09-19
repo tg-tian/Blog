@@ -2,10 +2,16 @@ package com.tg.blog.backend.dao;
 
 import com.tg.blog.backend.entity.Tag;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+/**
+ * 标签数据访问接口
+ * 提供标签相关的数据库操作方法
+ * 
+ * @author TG
+ * @since 1.0.0
+ */
 @Mapper
 public interface TagMapper {
     int insert(com.tg.blog.backend.entity.Tag tag);

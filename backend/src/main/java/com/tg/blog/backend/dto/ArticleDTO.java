@@ -5,6 +5,13 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * 文章数据传输对象
+ * 用于前后端数据传输和API接口
+ * 
+ * @author TG
+ * @since 1.0.0
+ */
 @Data
 public class ArticleDTO {
     private Long id;

@@ -21,6 +21,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 项目服务实现类
+ * 实现项目相关的业务逻辑，包括CRUD操作和标签关联管理
+ * 
+ * @author TG
+ * @since 1.0.0
+ */
 @Service
 public class ProjectServiceImpl implements ProjectService {
     

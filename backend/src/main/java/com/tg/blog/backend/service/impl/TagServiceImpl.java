@@ -9,6 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+/**
+ * 标签服务实现类
+ * 实现标签相关的业务逻辑
+ * 
+ * @author TG
+ * @since 1.0.0
+ */
 @Service
 public class TagServiceImpl implements TagService {
     @Autowired

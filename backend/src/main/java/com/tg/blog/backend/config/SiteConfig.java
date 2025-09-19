@@ -7,10 +7,19 @@ import org.springframework.context.annotation.Configuration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * 网站配置类
+ * 读取application.yaml中site前缀的配置项
+ * 
+ * @author TG
+ * @since 1.0.0
+ */
 @Configuration
 @ConfigurationProperties(prefix = "site")
 @Data
 public class SiteConfig {
+    
+    /** 网站建站时间，格式：yyyy-MM-ddTHH:mm:ss */
     private String creationDate;
     
     /**
