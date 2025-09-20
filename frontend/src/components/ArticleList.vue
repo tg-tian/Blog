@@ -4,17 +4,16 @@
             <div class="flex items-center justify-between">
                 <h2 class="text-3xl font-bold text-gray-900 flex items-center">
                     <svg class="w-8 h-8 mr-3 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                        <path
+                            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
                     </svg>
                     {{ title }}
                 </h2>
-                <button
-                    v-if="showBackButton"
-                    @click="emit('back')"
-                    class="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors px-4 py-2 rounded-md hover:bg-blue-50"
-                >
+                <button v-if="showBackButton" @click="emit('back')"
+                    class="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors px-4 py-2 rounded-md hover:bg-blue-50">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                        </path>
                     </svg>
                     返回归档
                 </button>
@@ -27,9 +26,9 @@
                     <h2 class="heading-lg mb-2">{{ item.title }}</h2>
                     <p class="text-description mb-3">{{ item.summary }}</p>
                     <!-- 封面图片 -->
-                    <div v-if="item.coverUrl && coverUrlCache[item.coverUrl]" class="mt-3">
-                        <img :src="coverUrlCache[item.coverUrl]" :alt="item.title" class="cover-image max-w-md"
-                            @error="handleImageError" />
+                    <div v-if="item.coverUrl" class="mt-3">
+                        <CachedImage :src="item.coverUrl" :alt="item.title" class="cover-image max-w-md"
+                            fallbackSrc="/banner.png" />
                     </div>
                     <!-- 文章统计信息 -->
                     <div class="mt-4">
@@ -45,9 +44,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { getFileUrl } from '@/utils/upload'
 import ArticleStats from './ArticleStats.vue'
+import CachedImage from './CachedImage.vue'
 const props = defineProps({
     articles: {
         type: Array,
@@ -65,33 +63,7 @@ const props = defineProps({
 
 const emit = defineEmits(['back'])
 
-// 缓存封面URL - 使用响应式对象而不是Map
-const coverUrlCache = ref({})
+// 不再需要手动缓存封面URL，使用CachedImage组件自动处理
 
-// 预加载所有封面URL
-const loadCoverUrls = async () => {
-    if (!props.articles) return
-
-    const promises = props.articles
-        .filter(article => article.coverUrl && !coverUrlCache.value[article.coverUrl])
-        .map(async (article) => {
-            try {
-                const url = await getFileUrl(article.coverUrl)
-                coverUrlCache.value[article.coverUrl] = url
-            } catch (error) {
-                console.error('获取封面URL失败:', error)
-                coverUrlCache.value[article.coverUrl] = ''
-            }
-        })
-
-    await Promise.all(promises)
-}
-
-// 监听文章列表变化，预加载封面
-watch(() => props.articles, loadCoverUrls, { immediate: true })
-
-// 处理图片加载错误
-const handleImageError = (event) => {
-    event.target.style.display = 'none'
-}
+// CachedImage组件已内置处理图片加载错误的功能
 </script>
