@@ -59,54 +59,26 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import ArticleList from '@/components/ArticleList.vue'
 import ProjectList from '@/components/ProjectList.vue'
 import NavBar from '@/layouts/NavBar.vue'
 import SideBar from '@/layouts/SideBar.vue'
 import Footer from '@/layouts/Footer.vue'
 import StatusMessage from '@/components/StatusMessage.vue'
-import { getArticles } from '@/api/article'
-import { getProjects } from '@/api/project'
+import { useHomeStore } from '@/stores/home'
 
-const loading = ref(true)
-const articles = ref([])
-const projects = ref([])
+const homeStore = useHomeStore()
+const loading = computed(() => homeStore.loading)
+const articles = computed(() => homeStore.articles)
+const projects = computed(() => homeStore.projects)
 const page = ref(1)
 const size = ref(10)
 const navOpacity = ref(0)
 
-// 加载文章列表
-const loadArticles = async () => {
-    try {
-        const response = await getArticles(page.value, size.value)
-        articles.value = response.data.list || []
-    } catch (error) {
-        console.error('加载文章列表失败:', error)
-        articles.value = []
-    }
-}
-
-// 加载项目列表
-const loadProjects = async () => {
-    try {
-        const response = await getProjects(1, 6) // 首页只显示6个项目
-        const projectsData = response.data || response
-        projects.value = projectsData.list || projectsData || []
-    } catch (error) {
-        console.error('加载项目列表失败:', error)
-        projects.value = []
-    }
-}
-
 // 加载所有数据
 const loadData = async () => {
-    try {
-        loading.value = true
-        await Promise.all([loadArticles(), loadProjects()])
-    } finally {
-        loading.value = false
-    }
+    await homeStore.loadHomeData()
 }
 
 // 处理滚动事件，调整导航栏透明度

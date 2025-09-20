@@ -1,10 +1,15 @@
 <template>
-  <router-view />
+  <PageTransition name="slide-up">
+    <router-view v-slot="{ Component }">
+      <component :is="Component" />
+    </router-view>
+  </PageTransition>
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { visitSite } from '@/api/stats'
+import PageTransition from '@/components/PageTransition.vue'
 
 // 记录访问统计
 const recordVisit = async () => {
@@ -24,4 +29,3 @@ onMounted(() => {
   recordVisit()
 })
 </script>
-

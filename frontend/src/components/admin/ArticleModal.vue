@@ -217,7 +217,7 @@ const handleImageUpload = async (files, callback) => {
         prefix: 'article-images',
         validation: {
           allowedTypes: ['image/*'],
-          maxSize: 5 * 1024 * 1024 // 5MB
+          maxSize: 1024 * 1024 * 1024 // 1GB
         }
       })
 
@@ -340,7 +340,7 @@ const uploadFile = async (file) => {
       },
       validation: {
         allowedTypes: ['image/*'],
-        maxSize: 5 * 1024 * 1024 // 5MB
+        maxSize: 1024 * 1024 * 1024 // 1GB
       }
     })
 

@@ -1,16 +1,6 @@
 <template>
-  <StatusMessage 
-    v-if="loading" 
-    type="loading" 
-    message="加载中..." 
-  />
-  <StatusMessage 
-    v-else-if="error" 
-    type="error" 
-    :message="error" 
-    :show-retry="true" 
-    @retry="loadArticle" 
-  />
+  <StatusMessage v-if="loading" type="loading" message="加载中..." />
+  <StatusMessage v-else-if="error" type="error" :message="error" :show-retry="true" @retry="loadArticle" />
   <div v-else-if="article" class="max-w-4xl mx-auto p-6">
     <div class="card-base card-content">
       <!-- 文章头部 -->
