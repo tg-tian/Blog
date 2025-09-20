@@ -129,7 +129,13 @@
 
               <!-- 图片预览 -->
               <div v-if="previewUrl" class="relative inline-block">
-                <img :src="previewUrl" alt="封面预览" class="w-32 h-32 object-cover rounded-md border border-gray-300" />
+                <CachedImage 
+                  :src="previewUrl" 
+                  alt="封面预览" 
+                  class="w-32 h-32 object-cover rounded-md border border-gray-300" 
+                  @load="() => {}" 
+                  @error="() => {}"
+                />
                 <button type="button" @click="clearImage"
                   class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs hover:bg-red-600">
                   ×
@@ -183,6 +189,7 @@ import { getTags } from '@/api/tag'
 import { uploadToMinio, createPreviewUrl, revokePreviewUrl, getFileUrl } from '@/utils/upload'
 import { formatDateForInput, formatDateForSubmit } from '@/utils/dateUtils'
 import { refreshMarkdownImageUrlsForEdit } from '@/utils/markdownUtils'
+import CachedImage from '@/components/CachedImage.vue'
 
 const props = defineProps({
   article: {

@@ -6,11 +6,17 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import router from './router'
 import '@/assets/tailwind.css'
 import 'md-editor-v3/lib/style.css';
+import imageCache from './utils/imageCache'
 
 const app = createApp(App)
+
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
+// 初始化图片缓存
+imageCache.loadCache()
+
 app.use(pinia)
 app.use(router)
+
 app.mount('#app')
