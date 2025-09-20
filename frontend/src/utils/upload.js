@@ -21,7 +21,7 @@ import { getOssUploadUrl, getPresignedUrl } from '@/api/file'
  * @returns {Object} { valid: boolean, error: string }
  */
 export const validateFile = (file, options = {}) => {
-  const { allowedTypes = ['image/*'], maxSize = 5 * 1024 * 1024 } = options
+  const { allowedTypes = ['image/*'], maxSize = 1024 * 1024 * 1024 } = options
   
   if (!file) {
     return { valid: false, error: '请选择文件' }
