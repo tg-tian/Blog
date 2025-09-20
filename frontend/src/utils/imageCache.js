@@ -108,7 +108,6 @@ class ImageCache {
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0);
           const base64Data = canvas.toDataURL('image/jpeg');
-          this.cacheImage(url, base64Data);
           resolve(base64Data);
         } catch (error) {
           console.error('图片转换失败:', error);

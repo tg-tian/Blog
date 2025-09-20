@@ -13,9 +13,6 @@ const app = createApp(App)
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
-// 初始化图片缓存
-imageCache.loadCache()
-
 app.use(pinia)
 app.use(router)
 
