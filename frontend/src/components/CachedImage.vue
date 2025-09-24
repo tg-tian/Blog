@@ -23,15 +23,12 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
-  fallbackSrc: {
-    type: String,
-    default: ''
-  }
+
 })
 
 const emit = defineEmits(['loaded', 'error'])
 
-const imageSrc = ref(props.fallbackSrc || '')
+const imageSrc = ref('')
 const isLoading = ref(true)
 const hasError = ref(false)
 
@@ -68,10 +65,7 @@ const loadImage = async () => {
     console.error('图片加载失败:', error)
     hasError.value = true
     isLoading.value = false
-    // 如果有备用图片，则使用备用图片
-    if (props.fallbackSrc) {
-      imageSrc.value = props.fallbackSrc
-    }
+
     emit('error', error)
   }
 }
@@ -86,10 +80,7 @@ const onImageLoaded = () => {
 const onImageError = (error) => {
   hasError.value = true
   isLoading.value = false
-  // 如果有备用图片，则使用备用图片
-  if (props.fallbackSrc && imageSrc.value !== props.fallbackSrc) {
-    imageSrc.value = props.fallbackSrc
-  }
+
   emit('error', error)
 }
 

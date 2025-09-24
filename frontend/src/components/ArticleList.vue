@@ -27,8 +27,7 @@
                     <p class="text-description mb-3">{{ item.summary }}</p>
                     <!-- 封面图片 -->
                     <div v-if="item.coverUrl" class="mt-3">
-                        <CachedImage :src="item.coverUrl" :alt="item.title" class="cover-image max-w-md"
-                            fallbackSrc="/banner.png" />
+                        <CachedImage :src="item.coverUrl" :alt="item.title" class="cover-image max-w-md" />
                     </div>
                     <!-- 文章统计信息 -->
                     <div class="mt-4">
