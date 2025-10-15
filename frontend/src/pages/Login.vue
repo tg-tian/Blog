@@ -79,9 +79,10 @@ const handleLogin = async () => {
   
   try {
     const response = await login(loginForm.value)
+    // 后端可能返回 { token } 或直接返回字符串令牌
+    const token = response?.token ?? response
     userStore.login({
-      username: loginForm.value.username,
-      isAdmin: true
+      token
     })
     router.push('/admin')
   } catch (err) {

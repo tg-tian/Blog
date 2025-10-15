@@ -1,9 +1,25 @@
 import axios from 'axios'
+import router from '@/router'
+import { useUserStore } from '@/stores/user'
 
 const instance = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
     timeout: 5000
 })
+
+// 请求拦截器：为受保护的接口添加Authorization头
+instance.interceptors.request.use(
+    (config) => {
+        const userStore = useUserStore()
+        const token = userStore?.token
+        if (token) {
+            config.headers = config.headers || {}
+            config.headers.Authorization = `Bearer ${token}`
+        }
+        return config
+    },
+    (error) => Promise.reject(error)
+)
 
 // 统一错误处理函数
 const handleError = (error) => {
@@ -17,7 +33,12 @@ const handleError = (error) => {
                 message = data?.message || '请求参数错误'
                 break
             case 401:
-                message = '未授权，请重新登录'
+                message = '未登录或会话已过期，请先登录'
+                try {
+                    const userStore = useUserStore()
+                    userStore.logout()
+                } catch (e) {}
+                router.push('/login')
                 break
             case 403:
                 message = '权限不足，无法访问'

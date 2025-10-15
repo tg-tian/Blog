@@ -10,11 +10,19 @@ package com.tg.blog.backend.service;
 public interface AuthService {
 
     /**
-     * 用户登录验证
+     * 用户登录验证并返回JWT
      * @param username 用户名
      * @param password 密码
-     * @return 登录是否成功
+     * @return 登录成功返回JWT字符串，失败返回null
      */
-    boolean login(String username, String password);
+    String login(String username, String password);
+    
+    /**
+     * 创建新用户
+     * @param userName 用户名
+     * @param password 密码
+     * @return 创建是否成功
+     */
+    boolean createUser(String userName, String password);
     
 }

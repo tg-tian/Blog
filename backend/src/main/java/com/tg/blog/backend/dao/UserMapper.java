@@ -19,4 +19,11 @@ public interface UserMapper {
      * @return 用户信息，如果不存在则返回null
      */
     User selectByUsername(String userName);
+    
+    /**
+     * 插入新用户
+     * @param user 用户信息
+     * @return 插入的记录数
+     */
+    int insertUser(User user);
 }

@@ -22,13 +22,27 @@ public class AuthController {
     /**
      * 用户登录
      * @param userDTO 用户登录信息，包含用户名和密码
-     * @return 登录结果，成功返回"success"，失败返回"fail"
+     * @return 登录成功返回JWT token字符串，失败返回"fail"
      */
     @PostMapping("/login")
     public String Login(@RequestBody UserDTO userDTO) {
-        if (authService.login(userDTO.getUsername(), userDTO.getPassword())) {
-            return "success";
+        String token = authService.login(userDTO.getUsername(), userDTO.getPassword());
+        if (token != null) {
+            return token;
         }
         return "fail";
+    }
+    
+    /**
+     * 创建新用户
+     * @param userDTO 用户注册信息，包含用户名和密码
+     * @return 创建结果，成功返回"success"，失败返回"fail"或"用户名已存在"
+     */
+    @PostMapping("/register")
+    public String register(@RequestBody UserDTO userDTO) {
+        if (authService.createUser(userDTO.getUsername(), userDTO.getPassword())) {
+            return "success";
+        }
+        return "用户名已存在";
     }
 }

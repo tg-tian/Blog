@@ -16,8 +16,11 @@ public class User {
     private Long id;
     
     /** 用户名，用于登录 */
-    private String username;
+    private String userName;
     
     /** 用户密码 */
     private String password;
+
+    /** 用户角色，如 USER/ADMIN */
+    private String role;
 }

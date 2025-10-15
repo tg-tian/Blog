@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: jdbc:mysql://localhost:3306/blog?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: tg852963
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: redis
+      port: 6379
+      password:     # 如果设置了密码，这里填上
+      database: 0   # 默认数据库索引
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+minio:
+    endpoint: http://minio:9002
+    access-key: tgapk
+    secret-key: tg852963
+    bucket: blog
+
+# 网站配置
+site:
+  creation-date: "2025-08-31T00:00:00"
+
+
+jwt:
+  secret: "TestSecretKeyForJWT_ChangeMe_AtLeast32Chars_123456"
+  expiration-ms: 3600000 # 1小时
+
+

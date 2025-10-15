@@ -30,4 +30,8 @@ public class RedisKeys {
     
     /** 每日点赞量，需要拼接日期，格式：site:likes:daily:yyyy-MM-dd */
     public static final String SITE_DAILY_LIKES = "site:likes:daily:";
+
+    // ==================== 认证相关 ====================
+    /** 用户登录token，按用户维度存储，格式：auth:token:user:<username> */
+    public static final String AUTH_USER_TOKEN_PREFIX = "auth:token:user:";
 }
