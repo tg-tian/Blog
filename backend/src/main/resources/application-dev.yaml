@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: jdbc:mysql://localhost:3306/blog?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: tg852963
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: 172.24.115.145
+      port: 6379
+      database: 0
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+minio:
+  endpoint: http://localhost:9002
+  access-key: tgapk
+  secret-key: tg852963
+  bucket: blog
