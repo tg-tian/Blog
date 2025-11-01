@@ -26,6 +26,7 @@
                update_time AS updateTime, deleted, category_id AS categoryId
         FROM article
         WHERE deleted = 0
+        ORDER BY publish_time DESC
     </select>
 
     <update id="updateArticle" parameterType="com.tg.blog.backend.entity.Article">
