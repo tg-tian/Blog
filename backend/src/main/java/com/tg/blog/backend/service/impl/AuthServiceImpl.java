@@ -7,6 +7,10 @@ import com.tg.blog.backend.constants.RoleConstants;
 import com.tg.blog.backend.util.JwtUtil;
 import com.tg.blog.backend.service.cache.RedisService;
 import com.tg.blog.backend.common.constants.RedisKeys;
+import com.tg.blog.backend.common.exception.LoginBadCredentialsException;
+import com.tg.blog.backend.common.exception.LoginParameterException;
+import com.tg.blog.backend.common.exception.LoginServiceException;
+import com.tg.blog.backend.common.exception.LoginUserNotFoundException;
 import io.jsonwebtoken.Claims;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +42,21 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String login(String userName, String password) {
         try {
+            // 参数校验
+            if (userName == null || userName.trim().isEmpty()) {
+                throw new LoginParameterException("用户名不能为空");
+            }
+            if (password == null || password.trim().isEmpty()) {
+                throw new LoginParameterException("密码不能为空");
+            }
+
             User user = userMapper.selectByUsername(userName);
             if (user == null) {
-                return null; // 用户不存在
+                throw new LoginUserNotFoundException("用户不存在");
             }
             // 使用Argon2PasswordEncoder验证密码
             if (!passwordEncoder.matches(password, user.getPassword())) {
-                return null;
+                throw new LoginBadCredentialsException("用户名或密码错误");
             }
             // 生成JWT
             String token = jwtUtil.generateToken(user);
@@ -57,8 +69,12 @@ public class AuthServiceImpl implements AuthService {
             }
             // 返回JWT
             return token;
+        } catch (LoginParameterException | LoginUserNotFoundException | LoginBadCredentialsException e) {
+            // 明确的业务异常直接抛出，由全局异常处理器统一返回
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            // 未预期异常包装为服务异常
+            throw new LoginServiceException("登录服务异常，请稍后重试", e);
         }
     }
     
