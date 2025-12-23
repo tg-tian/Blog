@@ -5,8 +5,7 @@ import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import router from './router'
 import '@/assets/tailwind.css'
-import 'md-editor-v3/lib/style.css';
-import imageCache from './utils/imageCache'
+import 'md-editor-v3/lib/style.css'
 
 const app = createApp(App)
 

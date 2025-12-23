@@ -1,23 +1,12 @@
-/**
- * Markdown 工具函数
- * 处理 Markdown 中的图片链接更新和其他相关功能
- */
-
 import { getFileUrl } from './upload'
 
-/**
- * 从 Markdown 文本中提取图片的 objectName
- * @param {string} markdownText - Markdown 文本
- * @returns {Array} objectName 数组
- */
-const getObjectNameFromUrl = (url) => {
+const getObjectNameFromUrl = (url: string): string | null => {
   try {
     let path = url
     if (path.startsWith('http')) {
       path = new URL(url).pathname
     }
 
-    // 移除查询参数
     const queryIndex = path.indexOf('?')
     if (queryIndex !== -1) {
       path = path.substring(0, queryIndex)
@@ -25,19 +14,15 @@ const getObjectNameFromUrl = (url) => {
 
     const parts = path.split('/').filter(Boolean)
 
-    // 处理包含 /minio/blog/ 代理路径的URL
     if (
       parts.length >= 3 &&
       parts[0] === 'minio' &&
       parts[1] === (import.meta.env.VITE_MINIO_BUCKET || 'blog')
     ) {
       return parts.slice(2).join('/')
-    }
-    // 处理直接的 /blog/ 路径
-    else if (parts.length > 1 && parts[0] === (import.meta.env.VITE_MINIO_BUCKET || 'blog')) {
+    } else if (parts.length > 1 && parts[0] === (import.meta.env.VITE_MINIO_BUCKET || 'blog')) {
       return parts.slice(1).join('/')
     }
-    // 其他情况直接返回完整路径
     return parts.join('/')
   } catch (e) {
     console.error('从URL解析objectName失败:', url, e)
@@ -45,12 +30,12 @@ const getObjectNameFromUrl = (url) => {
   }
 }
 
-export const extractImageObjectNames = (markdownText) => {
+export const extractImageObjectNames = (markdownText: string): string[] => {
   if (!markdownText) return []
 
   const imageRegex = /!\[.*?\]\((.*?)\)/g
-  const objectNames = new Set()
-  let match
+  const objectNames = new Set<string>()
+  let match: RegExpExecArray | null
 
   while ((match = imageRegex.exec(markdownText)) !== null) {
     const objectName = getObjectNameFromUrl(match[1])
@@ -58,19 +43,13 @@ export const extractImageObjectNames = (markdownText) => {
       objectNames.add(objectName)
     }
   }
-
-  console.log('提取的 objectNames:', [...objectNames])
-  console.log('原始 markdownText 中的图片URL:', markdownText.match(/!\[.*?\]\((.*?)\)/g))
   return [...objectNames]
 }
 
-/**
- * 更新 Markdown 文本中的图片链接（仅更新URL，不包裹HTML）
- * @param {string} markdownText - 原始 Markdown 文本
- * @param {Object} urlMapping - objectName 到新 URL 的映射 { objectName: newUrl }
- * @returns {string} 更新后的 Markdown 文本
- */
-export const updateMarkdownImageUrlsOnly = (markdownText, urlMapping) => {
+export const updateMarkdownImageUrlsOnly = (
+  markdownText: string,
+  urlMapping: Record<string, string>
+): string => {
   if (!markdownText || !urlMapping) return markdownText
 
   return markdownText.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, oldUrl) => {
@@ -82,13 +61,10 @@ export const updateMarkdownImageUrlsOnly = (markdownText, urlMapping) => {
   })
 }
 
-/**
- * 更新 Markdown 文本中的图片链接（包裹HTML标签）
- * @param {string} markdownText - 原始 Markdown 文本
- * @param {Object} urlMapping - objectName 到新 URL 的映射 { objectName: newUrl }
- * @returns {string} 更新后的 Markdown 文本
- */
-export const updateMarkdownImageUrls = (markdownText, urlMapping) => {
+export const updateMarkdownImageUrls = (
+  markdownText: string,
+  urlMapping: Record<string, string>
+): string => {
   if (!markdownText || !urlMapping) return markdownText
 
   return markdownText.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, oldUrl) => {
@@ -101,44 +77,31 @@ export const updateMarkdownImageUrls = (markdownText, urlMapping) => {
   })
 }
 
-/**
- * 刷新 Markdown 文本中的所有图片链接（仅更新URL，用于编辑）
- * @param {string} markdownText - 原始 Markdown 文本
- * @returns {Promise<string>} 更新后的 Markdown 文本
- */
-export const refreshMarkdownImageUrlsForEdit = async (markdownText) => {
+export const refreshMarkdownImageUrlsForEdit = async (markdownText: string): Promise<string> => {
   if (!markdownText) return markdownText
 
   try {
-    // 提取所有图片的 objectName
     const objectNames = extractImageObjectNames(markdownText)
-
     if (objectNames.length === 0) {
       return markdownText
     }
-
-    // 并发获取所有图片的新 URL
     const urlPromises = objectNames.map(async (objectName) => {
       try {
         const newUrl = await getFileUrl(objectName)
         return { objectName, newUrl }
       } catch (error) {
         console.error(`获取图片 URL 失败: ${objectName}`, error)
-        return { objectName, newUrl: null }
+        return { objectName, newUrl: null as string | null }
       }
     })
 
     const urlResults = await Promise.all(urlPromises)
-
-    // 创建 objectName 到新 URL 的映射
-    const urlMapping = {}
+    const urlMapping: Record<string, string> = {}
     urlResults.forEach(({ objectName, newUrl }) => {
       if (newUrl) {
         urlMapping[objectName] = newUrl
       }
     })
-
-    // 更新 Markdown 文本中的图片链接（仅更新URL，不包裹HTML）
     return updateMarkdownImageUrlsOnly(markdownText, urlMapping)
   } catch (error) {
     console.error('刷新 Markdown 图片链接失败:', error)
@@ -146,44 +109,32 @@ export const refreshMarkdownImageUrlsForEdit = async (markdownText) => {
   }
 }
 
-/**
- * 刷新 Markdown 文本中的所有图片链接（包裹HTML标签，用于显示）
- * @param {string} markdownText - 原始 Markdown 文本
- * @returns {Promise<string>} 更新后的 Markdown 文本
- */
-export const refreshMarkdownImageUrls = async (markdownText) => {
+export const refreshMarkdownImageUrls = async (markdownText: string): Promise<string> => {
   if (!markdownText) return markdownText
 
   try {
-    // 提取所有图片的 objectName
     const objectNames = extractImageObjectNames(markdownText)
-
     if (objectNames.length === 0) {
       return markdownText
     }
 
-    // 并发获取所有图片的新 URL
     const urlPromises = objectNames.map(async (objectName) => {
       try {
         const newUrl = await getFileUrl(objectName)
         return { objectName, newUrl }
       } catch (error) {
         console.error(`获取图片 URL 失败: ${objectName}`, error)
-        return { objectName, newUrl: null }
+        return { objectName, newUrl: null as string | null }
       }
     })
 
     const urlResults = await Promise.all(urlPromises)
-
-    // 创建 objectName 到新 URL 的映射
-    const urlMapping = {}
+    const urlMapping: Record<string, string> = {}
     urlResults.forEach(({ objectName, newUrl }) => {
       if (newUrl) {
         urlMapping[objectName] = newUrl
       }
     })
-
-    // 更新 Markdown 文本中的图片链接（包裹HTML标签）
     return updateMarkdownImageUrls(markdownText, urlMapping)
   } catch (error) {
     console.error('刷新 Markdown 图片链接失败:', error)
@@ -191,16 +142,10 @@ export const refreshMarkdownImageUrls = async (markdownText) => {
   }
 }
 
-/**
- * 预处理文章内容，刷新图片链接
- * @param {Object} article - 文章对象
- * @returns {Promise<Object>} 处理后的文章对象
- */
-export const preprocessArticleContent = async (article) => {
+export const preprocessArticleContent = async <T extends { content?: string }>(article: T): Promise<T> => {
   if (!article || !article.content) {
     return article
   }
-
   try {
     const refreshedContent = await refreshMarkdownImageUrls(article.content)
     return {
@@ -213,16 +158,10 @@ export const preprocessArticleContent = async (article) => {
   }
 }
 
-/**
- * 批量预处理文章列表，刷新图片链接
- * @param {Array} articles - 文章数组
- * @returns {Promise<Array>} 处理后的文章数组
- */
-export const preprocessArticleList = async (articles) => {
+export const preprocessArticleList = async <T extends { content?: string }>(articles: T[]): Promise<T[]> => {
   if (!Array.isArray(articles)) {
-    return articles
+    return articles as any
   }
-
   try {
     const processedArticles = await Promise.all(
       articles.map((article) => preprocessArticleContent(article))
@@ -234,58 +173,42 @@ export const preprocessArticleList = async (articles) => {
   }
 }
 
-/**
- * 简单的 Markdown 渲染函数
- * @param {string} markdownText - Markdown 文本
- * @returns {string} 渲染后的 HTML
- */
-export const renderMarkdown = (markdownText) => {
+export const renderMarkdown = (markdownText: string): string => {
   if (!markdownText) return ''
 
   let html = markdownText
 
-  // 转换标题
   html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>')
   html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>')
   html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>')
 
-  // 转换粗体和斜体
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
   html = html.replace(/\*(.*?)\*/g, '<em>$1</em>')
 
-  // 转换链接
   html = html.replace(
     /\[([^\]]+)\]\(([^\)]+)\)/g,
     '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
   )
 
-  // 转换图片
   html = html.replace(/!\[([^\]]*)\]\(([^\)]+)\)/g, '<img src="$2" alt="$1" />')
 
-  // 转换代码块（先处理多行代码块，再处理行内代码）
-  html = html.replace(/```([\w]*)?\n?([\s\S]*?)```/g, (match, lang, code) => {
-    // 移除首尾的空白行，但保持代码内部的格式
-    const cleanCode = code.replace(/^\n+|\n+$/g, '')
+  html = html.replace(/```([\w]*)?\n?([\s\S]*?)```/g, (match, _lang, code) => {
+    const cleanCode = String(code).replace(/^\n+|\n+$/g, '')
     return `<pre><code>${cleanCode}</code></pre>`
   })
   html = html.replace(/`([^`\n]+)`/g, '<code>$1</code>')
 
-  // 转换引用
   html = html.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
 
-  // 转换列表
   html = html.replace(/^\* (.*$)/gim, '<li>$1</li>')
   html = html.replace(/^- (.*$)/gim, '<li>$1</li>')
   html = html.replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
 
-  // 包装连续的li标签为ul
   html = html.replace(/((<li>.*<\/li>\s*)+)/g, '<ul>$1</ul>')
 
-  // 转换段落（避免将代码块包装在段落中）
   html = html.replace(/\n\n/g, '</p><p>')
   html = '<p>' + html + '</p>'
 
-  // 清理空段落和修复代码块被包装的问题
   html = html.replace(/<p><\/p>/g, '')
   html = html.replace(/<p>\s*<\/p>/g, '')
   html = html.replace(/<p>(<pre><code>[\s\S]*?<\/code><\/pre>)<\/p>/g, '$1')
@@ -295,3 +218,4 @@ export const renderMarkdown = (markdownText) => {
 
   return html
 }
+

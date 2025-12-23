@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw, type RouteLocationNormalized, type NavigationGuardNext } from 'vue-router'
 import MainLayout from '@/layouts/MainLayout.vue'
 import Home from '@/pages/Home.vue'
 import Article from '@/components/Article.vue'
@@ -8,7 +8,7 @@ import Login from '@/pages/Login.vue'
 import Admin from '@/pages/Admin.vue'
 import { useUserStore } from '@/stores/user'
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: Home
@@ -38,26 +38,20 @@ const router = createRouter({
   routes
 })
 
-// 路由守卫，保护需要认证的路由
-router.beforeEach((to, from, next) => {
+router.beforeEach((to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const userStore = useUserStore()
-
-  // 检查路由是否需要认证
   if (to.meta.requiresAuth) {
-    // 检查用户是否已登录
     if (!userStore.isLogin) {
       next('/login')
       return
     }
-
-    // 检查路由是否需要管理员权限
-    if (to.meta.requiresAdmin && !userStore.isAdmin) {
+    if ((to.meta as any).requiresAdmin && !userStore.isAdmin) {
       next('/')
       return
     }
   }
-
   next()
 })
 
 export default router
+

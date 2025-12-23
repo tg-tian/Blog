@@ -1,5 +1,24 @@
-const authorInfo = {
-  
+export interface Contact {
+  name: string
+  url: string
+  icon: string
+}
+
+export interface AuthorInfo {
+  avatarUrl: string
+  authorName: string
+  name: string
+  motto: string
+  title: string
+  description: string
+  githubUrl: string
+  githubIcon: string
+  email: string
+  emailIcon: string
+  contacts: Contact[]
+}
+
+const authorInfo: AuthorInfo = {
   avatarUrl: '/avatar.jpg',
   authorName: 'tgapk',
   name: 'tgapk',
@@ -10,8 +29,6 @@ const authorInfo = {
   githubIcon: '/github.svg',
   email: '914837973@qq.com',
   emailIcon: '/email.svg',
-  
-  // About页面专用的联系方式数组
   contacts: [
     {
       name: 'GitHub',
@@ -25,4 +42,6 @@ const authorInfo = {
     }
   ]
 }
+
 export default authorInfo
+

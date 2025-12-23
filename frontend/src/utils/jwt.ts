@@ -1,5 +1,6 @@
-// 解析JWT并返回payload对象；失败时返回空对象
-export function parseJwt(token) {
+import type { JwtPayload } from '@/types'
+
+export function parseJwt(token: string): JwtPayload {
   if (!token || typeof token !== 'string') return {}
   try {
     const parts = token.split('.')
@@ -19,3 +20,4 @@ export function parseJwt(token) {
     return {}
   }
 }
+
