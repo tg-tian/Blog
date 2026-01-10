@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw, type RouteLocationNormalized, type NavigationGuardNext } from 'vue-router'
 import MainLayout from '@/layouts/MainLayout.vue'
 import Home from '@/pages/Home.vue'
-import Article from '@/components/Article.vue'
+import Article from '@/pages/Article.vue'
 import About from '@/pages/About.vue'
 import Archive from '@/pages/Archive.vue'
 import Login from '@/pages/Login.vue'
