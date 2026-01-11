@@ -9,14 +9,6 @@
                     </svg>
                     {{ title }}
                 </h2>
-                <button v-if="showBackButton" @click="emit('back')"
-                    class="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors px-4 py-2 rounded-md hover:bg-blue-50">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
-                        </path>
-                    </svg>
-                    返回归档
-                </button>
             </div>
         </div>
         <div v-for="item in articles" :key="item.id" class="card-base overflow-hidden card-hover">
@@ -36,7 +28,6 @@
                             :tags="item.tags || []" />
                     </div>
                 </div>
-
             </router-link>
         </div>
     </div>
@@ -53,10 +44,6 @@ const props = defineProps({
     title: {
         type: String,
         default: '文章列表'
-    },
-    showBackButton: {
-        type: Boolean,
-        default: false
     }
 })
 

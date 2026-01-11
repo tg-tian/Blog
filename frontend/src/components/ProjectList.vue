@@ -9,27 +9,10 @@
           </svg>
           {{ title }}
         </h2>
-        <button
-          v-if="showBackButton"
-          @click="emit('back')"
-          class="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors px-4 py-2 rounded-md hover:bg-blue-50"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
-          返回归档
-        </button>
       </div>
     </div>
-
-    <!-- 加载状态 -->
-    <StatusMessage v-if="props.loading" type="loading" message="加载项目列表中..." />
-
-    <!-- 错误状态 -->
-    <StatusMessage v-else-if="props.error" type="error" :message="props.error" :show-retry="false" />
-
     <!-- 项目列表 -->
-    <div v-else class="grid-responsive">
+    <div  class="grid-responsive">
       <div v-for="(project, index) in projects" :key="project.id || index"
         class="card-base card-content flex flex-col card-hover cursor-pointer" @click="openProject(project.link)">
         <!-- 项目名称 -->
@@ -56,28 +39,15 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { getFileUrl } from '@/utils/upload'
-import StatusMessage from './StatusMessage.vue'
 
 const props = defineProps({
   projects: {
     type: Array,
     default: () => []
   },
-  loading: {
-    type: Boolean,
-    default: false
-  },
-  error: {
-    type: String,
-    default: ''
-  },
   title: {
     type: String,
     default: '项目列表'
-  },
-  showBackButton: {
-    type: Boolean,
-    default: false
   }
 })
 
