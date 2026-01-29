@@ -33,6 +33,14 @@
 import authorInfo from '@/config/author'
 
 // 从作者信息对象中获取所需属性
-const { avatarUrl, authorName, motto, githubIcon, emailIcon, email, githubUrl } = authorInfo
+const { 
+    avatarUrl, 
+    authorName, 
+    motto, 
+    githubIcon, 
+    emailIcon, 
+    email, 
+    githubUrl 
+} = authorInfo
 
 </script>

@@ -11,18 +11,11 @@ import { onMounted } from 'vue'
 import { visitSite } from '@/api/stats'
 import PageTransition from '@/components/PageTransition.vue'
 
-// 记录访问统计
-const recordVisit = async () => {
-  try {
-    // 检查是否已经记录过本次会话的访问
-    const hasVisited = sessionStorage.getItem('hasVisited')
-    if (!hasVisited) {
-      await visitSite()
-      sessionStorage.setItem('hasVisited', 'true')
-    }
-  } catch (error) {
-    console.error('记录访问统计失败:', error)
-  }
+const recordVisit = () => {
+  const hasVisited = sessionStorage.getItem('hasVisited')
+  if (hasVisited) return
+  visitSite().catch(console.error)
+  sessionStorage.setItem('hasVisited', 'true')
 }
 
 onMounted(() => {
