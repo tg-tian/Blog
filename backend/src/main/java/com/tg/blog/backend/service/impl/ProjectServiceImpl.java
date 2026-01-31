@@ -9,6 +9,7 @@ import com.tg.blog.backend.dao.TagMapper;
 import com.tg.blog.backend.dto.ProjectDTO;
 import com.tg.blog.backend.dto.TagStatsDTO;
 import com.tg.blog.backend.entity.Project;
+import com.tg.blog.backend.entity.ProjectTag;
 import com.tg.blog.backend.entity.Tag;
 import com.tg.blog.backend.mapper.ProjectConverter;
 import com.tg.blog.backend.mapper.TagConverter;
@@ -19,7 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 项目服务实现类
@@ -68,18 +73,8 @@ public class ProjectServiceImpl implements ProjectService {
         if (project == null) {
             throw new ArticleException("Project not found with id: " + id);
         }
-        
-        ProjectDTO projectDTO = projectConverter.toDTO(project);
-        
-        // 获取关联的标签
-        List<Long> tagIds = projectTagMapper.selectTagIdsByProjectId(project.getId());
-        if (tagIds != null && !tagIds.isEmpty()) {
-            List<Tag> tags = tagMapper.selectByIds(tagIds);
-            projectDTO.setTags(tagConverter.toDTOList(tags));
-            projectDTO.setTagIds(tagIds);
-        }
-        
-        return projectDTO;
+        List<ProjectDTO> result = convertProjectsWithTags(List.of(project));
+        return result.get(0);
     }
     
     @Override
@@ -158,16 +153,58 @@ public class ProjectServiceImpl implements ProjectService {
     }
     
     private List<ProjectDTO> convertProjectsWithTags(List<Project> projects) {
+        if (projects == null || projects.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Long> projectIds = new ArrayList<>();
+        for (Project project : projects) {
+            if (project.getId() != null) {
+                projectIds.add(project.getId());
+            }
+        }
+        Map<Long, List<Long>> tagIdsByProjectId = new HashMap<>();
+        if (!projectIds.isEmpty()) {
+            List<ProjectTag> relations = projectTagMapper.selectProjectTagsByProjectIds(projectIds);
+            for (ProjectTag relation : relations) {
+                if (relation == null || relation.getProjectId() == null || relation.getTagId() == null) {
+                    continue;
+                }
+                tagIdsByProjectId
+                        .computeIfAbsent(relation.getProjectId(), key -> new ArrayList<>())
+                        .add(relation.getTagId());
+            }
+        }
+        Set<Long> tagIds = new HashSet<>();
+        for (List<Long> ids : tagIdsByProjectId.values()) {
+            if (ids != null) {
+                tagIds.addAll(ids);
+            }
+        }
+        Map<Long, Tag> tagMap = new HashMap<>();
+        if (!tagIds.isEmpty()) {
+            List<Tag> tags = tagMapper.selectByIds(new ArrayList<>(tagIds));
+            for (Tag tag : tags) {
+                tagMap.put(tag.getId(), tag);
+            }
+        }
         List<ProjectDTO> result = new ArrayList<>();
         for (Project project : projects) {
             ProjectDTO dto = projectConverter.toDTO(project);
             
             // 获取关联的标签
-            List<Long> tagIds = projectTagMapper.selectTagIdsByProjectId(project.getId());
-            if (tagIds != null && !tagIds.isEmpty()) {
-                List<Tag> tags = tagMapper.selectByIds(tagIds);
-                dto.setTags(tagConverter.toDTOList(tags));
-                dto.setTagIds(tagIds);
+            List<Long> tagIdList = tagIdsByProjectId.get(project.getId());
+            if (tagIdList != null && !tagIdList.isEmpty()) {
+                List<Tag> tags = new ArrayList<>();
+                for (Long tagId : tagIdList) {
+                    Tag tag = tagMap.get(tagId);
+                    if (tag != null) {
+                        tags.add(tag);
+                    }
+                }
+                if (!tags.isEmpty()) {
+                    dto.setTags(tagConverter.toDTOList(tags));
+                    dto.setTagIds(tagIdList);
+                }
             }
             
             result.add(dto);

@@ -21,6 +21,15 @@
     <select id="selectTagIdsByProjectId" resultType="long">
         SELECT tag_id FROM project_tag WHERE project_id = #{projectId}
     </select>
+
+    <select id="selectProjectTagsByProjectIds" resultType="com.tg.blog.backend.entity.ProjectTag">
+        SELECT project_id AS projectId, tag_id AS tagId
+        FROM project_tag
+        WHERE project_id IN
+        <foreach collection="projectIds" item="projectId" open="(" separator="," close=")">
+            #{projectId}
+        </foreach>
+    </select>
     
     <select id="selectProjectIdsByTagId" resultType="long">
         SELECT project_id FROM project_tag WHERE tag_id = #{tagId}

@@ -1,6 +1,7 @@
 package com.tg.blog.backend.dao;
 
 import org.apache.ibatis.annotations.Mapper;
+import com.tg.blog.backend.entity.ProjectTag;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -37,6 +38,8 @@ public interface ProjectTagMapper {
      * @return 标签ID列表
      */
     List<Long> selectTagIdsByProjectId(Long projectId);
+
+    List<ProjectTag> selectProjectTagsByProjectIds(@Param("projectIds") List<Long> projectIds);
     
     /**
      * 根据标签ID查询关联的项目ID列表
