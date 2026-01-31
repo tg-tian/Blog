@@ -20,6 +20,13 @@ public interface CategoryMapper {
     int deleteById(Long id);
     
     Category selectById(Long id);
+
+    /**
+     * 批量查询分类
+     * @param ids 分类ID集合
+     * @return 分类列表
+     */
+    List<Category> selectByIds(List<Long> ids);
     
     List<Category> selectAll();
 }

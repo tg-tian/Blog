@@ -1,9 +1,9 @@
 package com.tg.blog.backend.dao;
 
-import com.tg.blog.backend.entity.Tag;
+import com.tg.blog.backend.entity.ArticleTagRelation;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 文章标签关联数据访问接口
@@ -36,7 +36,14 @@ public interface ArticleTagMapper {
      * @param articleId 文章ID
      * @return 标签ID列表
      */
-    List<Long> selectByArticleId(Long articleId);
+    List<Long> selectTagsByArticleId(Long articleId);
+
+    /**
+     * 批量查询文章ID和标签ID的关联记录
+     * @param articleIds 文章ID列表
+     * @return 文章ID和标签ID映射列表
+     */
+    List<ArticleTagRelation> selectArticleTagByArticleIds(List<Long> articleIds);
     
     /**
      * 根据文章ID删除所有关联的标签记录

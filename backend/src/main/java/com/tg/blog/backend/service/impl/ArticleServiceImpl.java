@@ -11,6 +11,7 @@ import com.tg.blog.backend.dto.ArticleDTO;
 import com.tg.blog.backend.dto.CategoryStatsDTO;
 import com.tg.blog.backend.dto.TagStatsDTO;
 import com.tg.blog.backend.entity.Article;
+import com.tg.blog.backend.entity.ArticleTagRelation;
 import com.tg.blog.backend.entity.Category;
 import com.tg.blog.backend.entity.Tag;
 import com.tg.blog.backend.mapper.ArticleConverter;
@@ -21,9 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 文章服务实现类
@@ -65,15 +70,8 @@ public class ArticleServiceImpl implements ArticleService {
         if (article == null) {
             throw new ArticleException("Article not found with id: " + id);
         }
-        ArticleDTO articleDTO = articleConverter.toDTO(article);
-        Category category = categoryMapper.selectById(article.getCategoryId());
-        articleDTO.setCategory(categoryConverter.toDTO(category));
-        List<Long> tagIds = articleTagMapper.selectByArticleId(article.getId());
-        if(tagIds!=null && !tagIds.isEmpty()){
-            List<Tag> tags = tagMapper.selectByIds(tagIds);
-            articleDTO.setTags(tagConverter.toDTOList(tags));
-        }
-        return articleDTO;
+        List<ArticleDTO> result = buildArticleDTOs(Collections.singletonList(article));
+        return result.get(0);
     }
 
     @Override
@@ -82,38 +80,14 @@ public class ArticleServiceImpl implements ArticleService {
         if (articles.isEmpty()) {
             throw new ArticleException("No articles found");
         }
-        List<ArticleDTO> result = new ArrayList<>();
-        for (Article article : articles) {
-            ArticleDTO dto = articleConverter.toDTO(article);
-            Category category = categoryMapper.selectById(article.getCategoryId());
-            dto.setCategory(categoryConverter.toDTO(category));
-            List<Long> tagIds = articleTagMapper.selectByArticleId(article.getId());
-            if(tagIds!=null && !tagIds.isEmpty()){
-                List<Tag> tags = tagMapper.selectByIds(tagIds);
-                dto.setTags(tagConverter.toDTOList(tags));
-            }
-            result.add(dto);
-        }
-        return result;
+        return buildArticleDTOs(articles);
     }
 
     @Override
     public PageInfo<ArticleDTO> getArticlesByPage(int page, int size) {
         PageHelper.startPage(page, size);
         List<Article> articles = articleMapper.selectAllArticles();
-        List<ArticleDTO> result = new ArrayList<>();
-        for (Article article : articles) {
-            ArticleDTO dto = articleConverter.toDTO(article);
-            Category category = categoryMapper.selectById(article.getCategoryId());
-            dto.setCategory(categoryConverter.toDTO(category));
-            List<Long> tagIds = articleTagMapper.selectByArticleId(article.getId());
-            if(tagIds!=null && !tagIds.isEmpty()){
-                List<Tag> tags = tagMapper.selectByIds(tagIds);
-                dto.setTags(tagConverter.toDTOList(tags));
-            }
-            result.add(dto);
-        }
-        return new PageInfo<>(result);
+        return new PageInfo<>(buildArticleDTOs(articles));
     }
     
     @Transactional
@@ -175,38 +149,67 @@ public class ArticleServiceImpl implements ArticleService {
     public PageInfo<ArticleDTO> getArticlesByCategory(Long categoryId, int page, int size) {
         PageHelper.startPage(page, size);
         List<Article> articles = articleMapper.selectArticlesByCategory(categoryId);
-        List<ArticleDTO> result = new ArrayList<>();
-        for (Article article : articles) {
-            ArticleDTO dto = articleConverter.toDTO(article);
-            Category category = categoryMapper.selectById(article.getCategoryId());
-            dto.setCategory(categoryConverter.toDTO(category));
-            List<Long> tagIds = articleTagMapper.selectByArticleId(article.getId());
-            if(tagIds!=null && !tagIds.isEmpty()){
-                List<Tag> tags = tagMapper.selectByIds(tagIds);
-                dto.setTags(tagConverter.toDTOList(tags));
-            }
-            result.add(dto);
-        }
-        return new PageInfo<>(result);
+        return new PageInfo<>(buildArticleDTOs(articles));
     }
     
     @Override
     public PageInfo<ArticleDTO> getArticlesByTag(Long tagId, int page, int size) {
         PageHelper.startPage(page, size);
         List<Article> articles = articleMapper.selectArticlesByTag(tagId);
+        return new PageInfo<>(buildArticleDTOs(articles));
+    }
+
+    private List<ArticleDTO> buildArticleDTOs(List<Article> articles) {
+        if (articles == null || articles.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Long> categoryIds = articles.stream().map(Article::getCategoryId).toList();
+        List<Long> articleIds = articles.stream().map(Article::getId).toList();
+        Map<Long, Category> categoryMap = categoryIds.isEmpty()
+                ? Map.of()
+                : categoryMapper.selectByIds(categoryIds).stream()
+                .collect(java.util.stream.Collectors.toMap(Category::getId, category -> category));
+        Map<Long, List<Long>> tagIdsByArticleId = new HashMap<>();
+        if (!articleIds.isEmpty()) {
+            List<ArticleTagRelation> relations = articleTagMapper.selectArticleTagByArticleIds(articleIds);
+            for (ArticleTagRelation relation : relations) {
+                if (relation == null || relation.getArticleId() == null || relation.getTagId() == null) {
+                    continue;
+                }
+                tagIdsByArticleId
+                        .computeIfAbsent(relation.getArticleId(), key -> new ArrayList<>())
+                        .add(relation.getTagId());
+            }
+        }
+        Set<Long> tagIds = tagIdsByArticleId.values().stream().flatMap(List::stream)
+                .collect(java.util.stream.Collectors.toSet());
+        Map<Long, Tag> tagMap = tagIds.isEmpty()
+                ? Map.of()
+                : tagMapper.selectByIds(new ArrayList<>(tagIds)).stream()
+                .collect(java.util.stream.Collectors.toMap(Tag::getId, tag -> tag));
         List<ArticleDTO> result = new ArrayList<>();
         for (Article article : articles) {
             ArticleDTO dto = articleConverter.toDTO(article);
-            Category category = categoryMapper.selectById(article.getCategoryId());
-            dto.setCategory(categoryConverter.toDTO(category));
-            List<Long> tagIds = articleTagMapper.selectByArticleId(article.getId());
-            if(tagIds!=null && !tagIds.isEmpty()){
-                List<Tag> tags = tagMapper.selectByIds(tagIds);
-                dto.setTags(tagConverter.toDTOList(tags));
+            Category category = categoryMap.get(article.getCategoryId());
+            if (category != null) {
+                dto.setCategory(categoryConverter.toDTO(category));
+            }
+            List<Long> tagIdList = tagIdsByArticleId.get(article.getId());
+            if (tagIdList != null && !tagIdList.isEmpty()) {
+                List<Tag> tags = new ArrayList<>();
+                for (Long tagId : tagIdList) {
+                    Tag tag = tagMap.get(tagId);
+                    if (tag != null) {
+                        tags.add(tag);
+                    }
+                }
+                if (!tags.isEmpty()) {
+                    dto.setTags(tagConverter.toDTOList(tags));
+                }
             }
             result.add(dto);
         }
-        return new PageInfo<>(result);
+        return result;
     }
     
 }

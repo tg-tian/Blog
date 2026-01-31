@@ -18,8 +18,17 @@
         </foreach>
     </insert>
     
-    <select id="selectByArticleId" resultType="long">
+    <select id="selectTagsByArticleId" resultType="long">
         SELECT tag_id FROM article_tag WHERE article_id = #{articleId}
+    </select>
+
+    <select id="selectArticleTagByArticleIds" resultType="com.tg.blog.backend.entity.ArticleTagRelation">
+        SELECT article_id AS articleId, tag_id AS tagId
+        FROM article_tag
+        WHERE article_id IN
+        <foreach collection="articleIds" item="articleId" open="(" separator="," close=")">
+            #{articleId}
+        </foreach>
     </select>
 
     <delete id="deleteArticleTag">

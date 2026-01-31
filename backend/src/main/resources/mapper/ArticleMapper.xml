@@ -20,6 +20,7 @@
         FROM article
         WHERE id = #{id} AND deleted = 0
     </select>
+
     <select id="selectAllArticles" resultType="com.tg.blog.backend.entity.Article">
         select id, title, summary, content, cover_url AS coverUrl,
                views, likes, comments, publish_time AS publishTime,
