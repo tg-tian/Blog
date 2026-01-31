@@ -1,4 +1,4 @@
-const CACHE_EXPIRATION = 24 * 60 * 60 * 1000
+const CACHE_EXPIRATION = Number(import.meta.env.VITE_IMAGE_CACHE_EXPIRATION) || 24 * 60 * 60 * 1000
 
 class ImageCache {
   private cacheKey = 'blog_image_cache'
