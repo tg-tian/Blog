@@ -20,19 +20,21 @@ export interface Article {
   views?: number
   likes?: number
   commentCount?: number
-  createdAt?: string
-  updatedAt?: string
+  coverUrl?: string
+  publishTime: string
+  updateTime: string
+  comments?: number
 }
 
 export interface Project {
   id: number
   name: string
-  description?: string
+  title: string
+  description: string
+  content: string
   tags?: Tag[]
-  views?: number
-  likes?: number
-  createdAt?: string
-  updatedAt?: string
+  coverImage: string
+  link: string
 }
 
 export interface SiteStats {
