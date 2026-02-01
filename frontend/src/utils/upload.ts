@@ -66,11 +66,8 @@ export const uploadToMinio = async (
     }
 
     let { uploadUrl, objectName } = data as { uploadUrl: string; objectName: string }
-
-    if (uploadUrl.includes('http://minio:9002')) {
-      const minioHost = import.meta.env.VITE_MINIO_HOST || 'localhost'
-      uploadUrl = uploadUrl.replace('http://minio:9002', `https://${minioHost}/minio`)
-    }
+    if (import.meta.env.VITE_ENV === 'production')
+      uploadUrl = uploadUrl.replace('http://', `https://`)
 
     return new Promise((resolve) => {
       const xhr = new XMLHttpRequest()
@@ -109,24 +106,11 @@ export const uploadToMinio = async (
   }
 }
 
-export const uploadMultipleFiles = async (
-  files: File[],
-  options: UploadOptions = {}
-): Promise<Array<{ file: string; success: boolean; objectName: string | null; error: string | null }>> => {
-  const results: Array<{ file: string; success: boolean; objectName: string | null; error: string | null }> = []
-
-  for (const file of files) {
-    const result = await uploadToMinio(file, options)
-    results.push({ file: file.name, ...result })
-  }
-
-  return results
-}
 
 export const getFileUrl = async (objectName: string): Promise<string> => {
   if (!objectName) return ''
 
-  if (objectName.startsWith('http://') || objectName.startsWith('https://')) {
+  if (objectName.startsWith('https://') || objectName.startsWith('http://')) {
     return objectName
   }
 
@@ -135,18 +119,12 @@ export const getFileUrl = async (objectName: string): Promise<string> => {
     const data: any = (response as any).data || response
     if (data.presignedUrl) {
       let processedUrl: string = data.presignedUrl
-      if (processedUrl.includes('http://minio:9002')) {
-        const minioHost = import.meta.env.VITE_MINIO_HOST || 'localhost'
-        processedUrl = processedUrl.replace('http://minio:9002', `https://${minioHost}/minio`)
-      }
+      if(import.meta.env.VITE_ENV === 'production')
+        processedUrl = processedUrl.replace('http://', `https://`)
       return processedUrl
     }
   } catch (error) {
-    console.warn('获取预签名URL失败，使用直接URL:', error)
-    const minioHost = import.meta.env.VITE_MINIO_HOST || 'localhost'
-    const minioBaseUrl = import.meta.env.VITE_MINIO_BASE_URL || `https://${minioHost}/minio`
-    const bucketName = import.meta.env.VITE_MINIO_BUCKET || 'blog'
-    return `${minioBaseUrl}/${bucketName}/${objectName}`
+    console.warn('获取预签名URL失败:', error)
   }
   return ''
 }
