@@ -63,7 +63,6 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getArticle, likeArticle, incrementViews } from '@/api/article'
-import { getFileUrl } from '@/utils/upload'
 import { refreshMarkdownImageUrls } from '@/utils/markdownUtils'
 import { MdPreview } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
@@ -121,26 +120,12 @@ const loadArticle = async () => {
         processedContent.value = article.value.content // 降级处理
       }
     }
-
-    // 加载封面图片
-    if (article.value.coverUrl) {
-      try {
-        coverUrl.value = await getFileUrl(article.value.coverUrl)
-      } catch (err) {
-        console.error('加载封面图片失败:', err)
-      }
-    }
   } catch (err) {
     console.error('加载文章失败:', err)
     error.value = '加载文章失败，请稍后重试'
   } finally {
     loading.value = false
   }
-}
-
-// 处理图片加载错误
-const handleImageError = () => {
-  coverUrl.value = ''
 }
 
 // 点赞文章
