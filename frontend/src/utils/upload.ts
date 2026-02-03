@@ -1,4 +1,4 @@
-import { getOssUploadUrl, getPresignedUrl } from '@/api/file'
+import { getOssUploadUrl } from '@/api/file'
 
 export interface ValidateOptions {
   allowedTypes?: string[]
@@ -12,7 +12,7 @@ export const validateFile = (file: File, options: ValidateOptions = {}) => {
     return { valid: false, error: '请选择文件' }
   }
 
-  const isValidType = allowedTypes.some(type => {
+  const isValidType = allowedTypes.some((type) => {
     if (type.endsWith('/*')) {
       return file.type.startsWith(type.replace('/*', '/'))
     }
@@ -106,27 +106,14 @@ export const uploadToMinio = async (
   }
 }
 
-
 export const getFileUrl = async (objectName: string): Promise<string> => {
   if (!objectName) return ''
-
   if (objectName.startsWith('https://') || objectName.startsWith('http://')) {
     return objectName
   }
-
-  try {
-    const response = await getPresignedUrl(objectName)
-    const data: any = (response as any).data || response
-    if (data.presignedUrl) {
-      let processedUrl: string = data.presignedUrl
-      if(import.meta.env.VITE_ENV === 'production')
-        processedUrl = processedUrl.replace('http://', `https://`)
-      return processedUrl
-    }
-  } catch (error) {
-    console.warn('获取预签名URL失败:', error)
-  }
-  return ''
+  const minioHost = import.meta.env.VITE_MINIO_HOST || 'localhost'
+  const bucketName = import.meta.env.VITE_MINIO_BUCKET || 'blog'
+  return `${minioHost}/${bucketName}/${objectName}`
 }
 
 export const revokePreviewUrl = (url: string) => {
@@ -134,4 +121,3 @@ export const revokePreviewUrl = (url: string) => {
     URL.revokeObjectURL(url)
   }
 }
-

@@ -18,7 +18,7 @@ mybatis:
     map-underscore-to-camel-case: true
 
 minio:
-  endpoint: http://xihuanwanyuanshen.icu/minio
+  endpoint: https://xihuanwanyuanshen.icu/minio
   access-key: tgapk
   secret-key: tg852963
   bucket: blog
