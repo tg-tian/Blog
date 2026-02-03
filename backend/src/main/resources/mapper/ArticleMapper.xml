@@ -22,7 +22,7 @@
     </select>
 
     <select id="selectAllArticles" resultType="com.tg.blog.backend.entity.Article">
-        select id, title, summary, content, cover_url AS coverUrl,
+        select id, title, summary, cover_url AS coverUrl,
                views, likes, comments, publish_time AS publishTime,
                update_time AS updateTime, deleted, category_id AS categoryId
         FROM article
