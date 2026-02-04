@@ -13,6 +13,7 @@ RUN npm ci
 # 4. 复制配置文件和静态入口
 # 这些文件不经常变动，单独复制以利用缓存
 COPY frontend/vite.config.* ./
+COPY frontend/tsconfig*.json ./
 COPY frontend/tailwind.config.js ./
 COPY frontend/postcss.config.js ./
 COPY frontend/index.html ./
