@@ -34,8 +34,8 @@ RUN apk add --no-cache curl && \
 # 从构建阶段复制 JAR 文件
 COPY --from=builder /app/target/*.jar app.jar
 
-# 更改文件所有者
-RUN chown appuser:appuser app.jar
+# 创建日志目录并更改所有权
+RUN mkdir logs && chown -R appuser:appuser /app
 
 # 切换到非 root 用户
 USER appuser
