@@ -18,7 +18,7 @@ mybatis:
     map-underscore-to-camel-case: true
 
 minio:
-  endpoint: minio:9002
+  endpoint: http://minio:9002
   access-key: tgapk
   secret-key: tg852963
   bucket: blog
