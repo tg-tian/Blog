@@ -2,7 +2,7 @@ package com.tg.blog.backend.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.tg.blog.backend.common.exception.ArticleException;
+import com.tg.blog.backend.common.exception.BusinessException;
 import com.tg.blog.backend.dao.ProjectMapper;
 import com.tg.blog.backend.dao.ProjectTagMapper;
 import com.tg.blog.backend.dao.TagMapper;
@@ -71,7 +71,7 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectDTO getProjectById(Long id) {
         Project project = projectMapper.selectProjectById(id);
         if (project == null) {
-            throw new ArticleException("Project not found with id: " + id);
+            throw new BusinessException("Project not found with id: " + id);
         }
         List<ProjectDTO> result = convertProjectsWithTags(List.of(project));
         return result.get(0);
@@ -102,7 +102,7 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectDTO updateProject(Long id, ProjectDTO projectDTO) {
         Project existingProject = projectMapper.selectProjectById(id);
         if (existingProject == null) {
-            throw new ArticleException("Cannot update. Project not found with id: " + id);
+            throw new BusinessException("Cannot update. Project not found with id: " + id);
         }
         
         Project project = projectConverter.toEntity(projectDTO);
@@ -129,7 +129,7 @@ public class ProjectServiceImpl implements ProjectService {
         // 删除项目
         int rows = projectMapper.deleteProject(id);
         if (rows != 1) {
-            throw new ArticleException("Failed to delete project with id: " + id);
+            throw new BusinessException("Failed to delete project with id: " + id);
         }
         return true;
     }

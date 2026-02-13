@@ -17,4 +17,13 @@ public class UserDTO {
     
     /** 用户密码 */
     private String password;
+
+    /** 邮箱 */
+    private String email;
+
+    private String code;
+
+    private String registerToken;
+
+    
 }

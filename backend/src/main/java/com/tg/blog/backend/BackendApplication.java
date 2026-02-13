@@ -5,6 +5,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * 博客系统后端应用启动类
@@ -14,6 +15,7 @@ import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServic
  * @since 1.0.0
  */
 @Slf4j
+@EnableAsync
 @SpringBootApplication(exclude = {UserDetailsServiceAutoConfiguration.class})
 @MapperScan("com.tg.blog.backend.dao")
 public class BackendApplication {

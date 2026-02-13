@@ -72,7 +72,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { logout } from '@/api/auth'
+import { logout } from '@/api/user'
 import ArticleManager from '@/components/admin/ArticleManager.vue'
 import CategoryManager from '@/components/admin/CategoryManager.vue'
 import TagManager from '@/components/admin/TagManager.vue'

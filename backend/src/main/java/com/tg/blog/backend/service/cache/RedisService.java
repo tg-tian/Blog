@@ -31,6 +31,11 @@ public class RedisService {
     public void set(String key, String value, long timeout, TimeUnit unit) {
         redisTemplate.opsForValue().set(key, value, timeout, unit);
     }
+
+    public boolean setIfAbsent(String key, String value, long timeout, TimeUnit unit) {
+        Boolean result = redisTemplate.opsForValue().setIfAbsent(key, value, timeout, unit);
+        return Boolean.TRUE.equals(result);
+    }
     
     /**
      * 获取指定键的值
@@ -45,6 +50,10 @@ public class RedisService {
         }
         return value;
     }
+
+    public String getIfPresent(String key) {
+        return redisTemplate.opsForValue().get(key);
+    }
     
     /**
      * 删除指定键
@@ -53,6 +62,7 @@ public class RedisService {
     public void delete(String key) {
         redisTemplate.delete(key);
     }
+
     
     /**
      * 对指定键的值进行递增操作

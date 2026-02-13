@@ -19,6 +19,13 @@ public interface UserMapper {
      * @return 用户信息，如果不存在则返回null
      */
     User selectByUsername(String userName);
+
+    /**
+     * 根据邮箱查询用户信息
+     * @param email 邮箱
+     * @return 用户信息，如果不存在则返回null
+     */
+    User selectByEmail(String email);
     
     /**
      * 插入新用户

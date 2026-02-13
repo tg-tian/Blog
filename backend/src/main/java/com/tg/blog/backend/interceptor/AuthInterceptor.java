@@ -3,7 +3,7 @@ package com.tg.blog.backend.interceptor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tg.blog.backend.common.ResponseEntity;
 import com.tg.blog.backend.common.constants.RedisKeys;
-import com.tg.blog.backend.constants.RoleConstants;
+import com.tg.blog.backend.common.constants.UserConstants;
 import com.tg.blog.backend.service.cache.RedisService;
 import com.tg.blog.backend.util.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -89,7 +89,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        boolean isAdmin = RoleConstants.ADMIN.equals(role);
+        boolean isAdmin = UserConstants.Role.ADMIN.equals(role);
         if (!isAdmin) {
             writeJson(response, ResponseEntity.failure(403, "无权限访问该管理接口"));
             return false;

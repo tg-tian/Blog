@@ -5,12 +5,17 @@
 
 <mapper namespace="com.tg.blog.backend.dao.UserMapper">
     <select id="selectByUsername" resultType="com.tg.blog.backend.entity.User">
-        select id, user_name, password, role from user
+        select id, user_name, password, role, email, status, avatar, created_at, updated_at from user
         where user_name = #{userName}
+    </select>
+
+    <select id="selectByEmail" resultType="com.tg.blog.backend.entity.User">
+        select id, user_name, password, role, email, status, avatar, created_at, updated_at from user
+        where email = #{email}
     </select>
     
     <insert id="insertUser" parameterType="com.tg.blog.backend.entity.User" useGeneratedKeys="true" keyProperty="id">
-        insert into user (user_name, password, role)
-        values (#{userName}, #{password}, #{role})
+        insert into user (user_name, password, role, email, status, avatar, created_at, updated_at)
+        values (#{userName}, #{password}, #{role}, #{email}, #{status}, #{avatar}, #{createdAt}, #{updatedAt})
     </insert>
 </mapper>

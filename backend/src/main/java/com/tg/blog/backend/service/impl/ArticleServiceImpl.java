@@ -2,7 +2,7 @@ package com.tg.blog.backend.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.tg.blog.backend.common.exception.ArticleException;
+import com.tg.blog.backend.common.exception.BusinessException;
 import com.tg.blog.backend.dao.ArticleMapper;
 import com.tg.blog.backend.dao.ArticleTagMapper;
 import com.tg.blog.backend.dao.CategoryMapper;
@@ -68,7 +68,7 @@ public class ArticleServiceImpl implements ArticleService {
     public ArticleDTO getArticleById(Long id) {
         Article article = articleMapper.selectArticleById(id);
         if (article == null) {
-            throw new ArticleException("Article not found with id: " + id);
+            throw new BusinessException(404, "Article not found with id: " + id);
         }
         List<ArticleDTO> result = buildArticleDTOs(Collections.singletonList(article));
         return result.get(0);
@@ -78,7 +78,7 @@ public class ArticleServiceImpl implements ArticleService {
     public List<ArticleDTO> getAllArticles() {
         List<Article> articles = articleMapper.selectAllArticles();
         if (articles.isEmpty()) {
-            throw new ArticleException("No articles found");
+            throw new BusinessException(404, "No articles found");
         }
         return buildArticleDTOs(articles);
     }
@@ -95,7 +95,7 @@ public class ArticleServiceImpl implements ArticleService {
     public ArticleDTO updateArticle(Long id, ArticleDTO articleDTO) {
         Article existingArticle = articleMapper.selectArticleById(id);
         if (existingArticle == null) {
-            throw new ArticleException("Cannot update. Article not found with id: " + id);
+            throw new BusinessException(404, "Cannot update. Article not found with id: " + id);
         }
         Article article = articleConverter.toEntity(articleDTO);
         article.setId(id);
@@ -110,7 +110,7 @@ public class ArticleServiceImpl implements ArticleService {
     public boolean deleteArticle(Long id) {
         int rows = articleMapper.deleteArticle(id);
         if (rows != 1) {
-            throw new ArticleException("Failed to delete article with id: " + id);
+            throw new BusinessException(500, "Failed to delete article with id: " + id);
         }
         return true;
     }
