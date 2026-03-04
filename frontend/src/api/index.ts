@@ -69,7 +69,13 @@ const handleError = (error: any) => {
 }
 
 instance.interceptors.response.use(
-  (res: AxiosResponse) => res.data,
+  (res: AxiosResponse) => {
+    const { code, message, data } = res.data
+    if (code === 200) {
+      return data
+    }
+    return Promise.reject(new Error(message || 'Error'))
+  },
   handleError
 )
 

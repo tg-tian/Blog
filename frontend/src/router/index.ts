@@ -5,6 +5,7 @@ import Article from '@/pages/Article.vue'
 import About from '@/pages/About.vue'
 import Archive from '@/pages/Archive.vue'
 import Login from '@/pages/Login.vue'
+import Register from '@/pages/Register.vue'
 import Admin from '@/pages/Admin.vue'
 import { useUserStore } from '@/stores/user'
 
@@ -25,6 +26,10 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     component: Login
+  },
+  {
+    path: '/register',
+    component: Register
   },
   {
     path: '/admin',
